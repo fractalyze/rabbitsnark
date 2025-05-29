@@ -1,0 +1,42 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_unittest")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "modulus",
+    srcs = ["modulus.cc"],
+    hdrs = ["modulus.h"],
+    deps = [
+        "@com_google_absl//absl/log:check",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base:logging",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+        "@zkx//zkx/math/base:big_int",
+    ],
+)
+
+zkx_cc_library(
+    name = "sections",
+    hdrs = ["sections.h"],
+    deps = [
+        "@com_google_absl//absl/strings",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base:logging",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_unittest(
+    name = "base_unittests",
+    srcs = [
+        "modulus_unittest.cc",
+        "sections_unittest.cc",
+    ],
+    deps = [
+        ":modulus",
+        ":sections",
+        "@zkx//zkx/base/buffer:serde",
+        "@zkx//zkx/base/buffer:vector_buffer",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:g1",
+    ],
+)

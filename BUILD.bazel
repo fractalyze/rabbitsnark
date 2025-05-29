@@ -1,0 +1,36 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_binary", "zkx_cc_library")
+
+zkx_cc_library(
+    name = "command_runner",
+    srcs = ["command_runner.cc"],
+    hdrs = ["command_runner.h"],
+    deps = [
+        "//circom/hlo:hlo_generator",
+        "//circom/json:proof_writer",
+        "//circom/json:public_writer",
+        "//circom/wtns",
+        "//circom/zkey",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//xla/tsl/platform:path",
+        "@zkx//xla/tsl/platform:statusor",
+        "@zkx//zkx:literal_util",
+        "@zkx//zkx/base/flag:flag_parser",
+        "@zkx//zkx/base/flag:numeric_flags",
+        "@zkx//zkx/hlo/parser:hlo_parser",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:curve",
+        "@zkx//zkx/service:hlo_runner",
+        "@zkx//zkx/service:platform_util",
+        "@zkx//zkx/service/cpu:cpu_compiler_registerer",
+        "@zkx//zkx/service/cpu:cpu_transfer_manager",
+        "@zkx//zkx/stream_executor/host:host_platform",
+    ],
+)
+
+zkx_cc_binary(
+    name = "prover_main",
+    srcs = ["prover_main.cc"],
+    deps = [":command_runner"],
+)

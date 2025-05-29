@@ -1,0 +1,17 @@
+workspace(name = "groth16")
+
+load("//bazel:groth16_deps.bzl", "groth16_deps")
+
+groth16_deps()
+
+load("@zkx//bazel:zkx_deps.bzl", "zkx_deps")
+
+zkx_deps()
+
+load("@zkx//bazel:zkx_deps2.bzl", "zkx_deps2")
+
+zkx_deps2()
+
+load("@zkx//bazel:zkx_deps3.bzl", "zkx_deps3")
+
+zkx_deps3()

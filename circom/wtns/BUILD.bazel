@@ -1,0 +1,31 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_unittest")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "wtns",
+    srcs = ["wtns.cc"],
+    hdrs = ["wtns.h"],
+    deps = [
+        "//circom/base:modulus",
+        "//circom/base:sections",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//xla/tsl/platform:statusor",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_unittest(
+    name = "wtns_unittests",
+    srcs = ["wtns_unittest.cc"],
+    data = ["multiplier_3.wtns"],
+    deps = [
+        ":wtns",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:fr",
+    ],
+)

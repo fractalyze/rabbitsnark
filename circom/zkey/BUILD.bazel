@@ -1,0 +1,59 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_unittest")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "coefficient",
+    hdrs = ["coefficient.h"],
+    deps = [
+        "@com_google_absl//absl/types:span",
+        "@zkx//zkx/math/base:sparse_matrix",
+    ],
+)
+
+zkx_cc_library(
+    name = "proving_key",
+    hdrs = ["proving_key.h"],
+    deps = [
+        ":verifying_key",
+        "@com_google_absl//absl/types:span",
+    ],
+)
+
+zkx_cc_library(
+    name = "verifying_key",
+    hdrs = ["verifying_key.h"],
+    deps = [
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_library(
+    name = "zkey",
+    srcs = ["zkey.cc"],
+    hdrs = ["zkey.h"],
+    deps = [
+        ":coefficient",
+        ":proving_key",
+        "//circom/base:modulus",
+        "//circom/base:sections",
+        "@com_google_absl//absl/types:span",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base:openmp_util",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+        "@zkx//zkx/base/buffer:serde",
+    ],
+)
+
+zkx_cc_unittest(
+    name = "zkey_unittests",
+    srcs = ["zkey_unittest.cc"],
+    data = ["multiplier_3.zkey"],
+    deps = [
+        ":zkey",
+        "@zkx//zkx/base/containers:container_util",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:curve",
+    ],
+)

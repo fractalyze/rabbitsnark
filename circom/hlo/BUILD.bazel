@@ -1,0 +1,22 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "hlo_generator",
+    hdrs = ["hlo_generator.h"],
+    deps = [
+        "//circom/zkey",
+        "@com_google_absl//absl/strings",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:path",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:primitive_util",
+        "@zkx//zkx:shape_util",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base:logging",
+        "@zkx//zkx/base/buffer:vector_buffer",
+        "@zkx//zkx/math/poly:bit_reverse",
+        "@zkx//zkx/math/poly:root_of_unity",
+    ],
+)
