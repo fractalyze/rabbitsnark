@@ -64,7 +64,7 @@ bazel-bin/prover_main compile zkey output [OPTIONS]
 ### Subcommand: `prove`
 
 ```shell
-bazel-bin/prover_main compile zkey wtns proof public output [OPTIONS]
+bazel-bin/prover_main prove zkey wtns proof public output [OPTIONS]
 ```
 
 #### Positional arguments for `prove`
