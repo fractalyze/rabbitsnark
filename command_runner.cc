@@ -115,9 +115,6 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       });
     }
 
-    module->mutable_config().mutable_debug_options().set_zkx_obj_file_dir(
-        options.output_dir);
-
     std::unique_ptr<OpaqueExecutable> opaque_executable;
     RUN_WITH_PROFILE("compiling", {
       TF_ASSIGN_OR_RETURN(opaque_executable,
