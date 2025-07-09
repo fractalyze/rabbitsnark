@@ -17,6 +17,7 @@
 #include "zkx/base/buffer/vector_buffer.h"
 #include "zkx/base/logging.h"
 #include "zkx/literal.h"
+#include "zkx/math/base/batch_inverse.h"
 #include "zkx/math/poly/bit_reverse.h"
 #include "zkx/math/poly/root_of_unity.h"
 #include "zkx/primitive_util.h"
@@ -44,10 +45,12 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %B = bn254.sf[$n, $m]{1, 0:D(D, C)NNZ($b_num_non_zeros)} parameter(12)
 
   %twiddles = bn254.sf[$n] parameter(13)
+  %fft_twiddles = bn254.sf[$n] parameter(14)
+  %ifft_twiddles = bn254.sf[$n] parameter(15)
 
-  %z = bn254.sf[$m]{0:MONT(false)} parameter(14)
-  %r = bn254.sf[] parameter(15)
-  %s = bn254.sf[] parameter(16)
+  %z = bn254.sf[$m]{0:MONT(false)} parameter(16)
+  %r = bn254.sf[] parameter(17)
+  %s = bn254.sf[] parameter(18)
 
   %z.in_mont = bn254.sf[$m]{0} convert(%z)
 
@@ -55,17 +58,17 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %Bz = bn254.sf[$n] dot(%B, %z.in_mont)
   %Cz = bn254.sf[$n] multiply(%Az, %Bz)
 
-  %a.poly = bn254.sf[$n] fft(%Az), fft_type=IFFT, fft_length=$n, fft_no_bit_reverse=true, control-predecessors={%Cz}
-  %b.poly = bn254.sf[$n] fft(%Bz), fft_type=IFFT, fft_length=$n, fft_no_bit_reverse=true, control-predecessors={%Cz}
-  %c.poly = bn254.sf[$n] fft(%Cz), fft_type=IFFT, fft_length=$n, fft_no_bit_reverse=true
+  %a.poly = bn254.sf[$n] fft(%Az, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false, control-predecessors={%Cz}
+  %b.poly = bn254.sf[$n] fft(%Bz, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false, control-predecessors={%Cz}
+  %c.poly = bn254.sf[$n] fft(%Cz, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false
 
   %a.poly_x_twiddles = bn254.sf[$n] multiply(%a.poly, %twiddles)
   %b.poly_x_twiddles = bn254.sf[$n] multiply(%b.poly, %twiddles)
   %c.poly_x_twiddles = bn254.sf[$n] multiply(%c.poly, %twiddles)
 
-  %a.evals = bn254.sf[$n] fft(%a.poly_x_twiddles), fft_type=FFT, fft_length=$n, fft_no_bit_reverse=true
-  %b.evals = bn254.sf[$n] fft(%b.poly_x_twiddles), fft_type=FFT, fft_length=$n, fft_no_bit_reverse=true
-  %c.evals = bn254.sf[$n] fft(%c.poly_x_twiddles), fft_type=FFT, fft_length=$n, fft_no_bit_reverse=true
+  %a.evals = bn254.sf[$n] fft(%a.poly_x_twiddles, %fft_twiddles), fft_type=FFT, fft_length=$n, fft_do_bit_reverse=false
+  %b.evals = bn254.sf[$n] fft(%b.poly_x_twiddles, %fft_twiddles), fft_type=FFT, fft_length=$n, fft_do_bit_reverse=false
+  %c.evals = bn254.sf[$n] fft(%c.poly_x_twiddles, %fft_twiddles), fft_type=FFT, fft_length=$n, fft_do_bit_reverse=false
 
   %h.evals.tmp = bn254.sf[$n] multiply(%a.evals, %b.evals)
   %h.evals = bn254.sf[$n] subtract(%h.evals.tmp, %c.evals)
@@ -164,6 +167,41 @@ absl::Status WriteTwiddlesToFile(
   return WriteSpanToFile(absl::MakeConstSpan(twiddles), output_dir, "twiddles");
 }
 
+template <typename T>
+absl::Status WriteFFTTwiddlesToFile(
+    size_t domain_size, std::string_view output_dir,
+    std::map<std::string, std::string>& replacements) {
+  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
+
+  std::vector<T> fft_twiddles(domain_size);
+  T x = w;
+  for (int64_t i = 0; i < domain_size; ++i) {
+    fft_twiddles[i] = x;
+    x *= w;
+  }
+
+  return WriteSpanToFile(absl::MakeConstSpan(fft_twiddles), output_dir,
+                         "fft_twiddles");
+}
+
+template <typename T>
+absl::Status WriteIFFTTwiddlesToFile(
+    size_t domain_size, std::string_view output_dir,
+    std::map<std::string, std::string>& replacements) {
+  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
+
+  T x = w;
+  std::vector<math::bn254::Fr> ifft_twiddles(domain_size);
+  for (int64_t i = 0; i < domain_size; ++i) {
+    ifft_twiddles[i] = x;
+    x *= w;
+  }
+  TF_RETURN_IF_ERROR(math::BatchInverse(ifft_twiddles, &ifft_twiddles));
+
+  return WriteSpanToFile(absl::MakeConstSpan(ifft_twiddles), output_dir,
+                         "ifft_twiddles");
+}
+
 }  // namespace
 
 template <typename Curve>
@@ -212,6 +250,10 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
                                            output_dir, replacements));
   TF_RETURN_IF_ERROR(
       WriteTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
+  TF_RETURN_IF_ERROR(
+      WriteFFTTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
+  TF_RETURN_IF_ERROR(
+      WriteIFFTTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
 
   std::string hlo_string = absl::StrReplaceAll(kHloText, replacements);
 

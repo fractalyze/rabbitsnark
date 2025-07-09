@@ -228,6 +228,12 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
           options, "twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
           &buffers, &regions));
+      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
+          options, "fft_twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
+          &buffers, &regions));
+      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
+          options, "ifft_twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
+          &buffers, &regions));
     });
     RUN_WITH_PROFILE("sending witness parameters", {
       TF_RETURN_IF_ERROR(AddVectorParameter(wtns->GetWitnesses(), &buffers));
