@@ -171,18 +171,16 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       opaque_executable = runner_.WrapExecutable(std::move(executable));
     });
 
-    std::unique_ptr<ZKey<Curve>> zkey;
-    RUN_WITH_PROFILE(
-        "parsing zkey",
-        TF_ASSIGN_OR_RETURN(zkey,
-                            ParseZKey<Curve>(options.zkey_path,
-                                             /*process_coefficients=*/false)));
-    const ProvingKey<Curve>& pk = zkey->GetProvingKey();
-    const v1::ZKey<Curve>* v1_zkey = zkey->ToV1();
-    const v1::ZKeyHeaderGrothSection<Curve>& header = v1_zkey->header_groth;
-    int64_t l = header.num_public_inputs;
-    int64_t m = header.num_vars;
-    int64_t n = header.domain_size;
+    ZKeyAdditionalData<Curve> zkey_additional_data;
+    RUN_WITH_PROFILE("loading zkey additional data", {
+      TF_ASSIGN_OR_RETURN(
+          zkey_additional_data,
+          ZKeyAdditionalData<Curve>::ReadFromFile(options.output_dir));
+    });
+
+    int64_t l = zkey_additional_data.l;
+    int64_t m = zkey_additional_data.m;
+    int64_t n = zkey_additional_data.n;
 
     std::unique_ptr<Wtns<F>> wtns;
     RUN_WITH_PROFILE("parsing witness", {
@@ -194,17 +192,17 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>> regions;
     RUN_WITH_PROFILE("sending zkey parameters", {
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.alpha_g1, &buffers));
+          AddScalarParameter(zkey_additional_data.alpha_g1, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.beta_g2, &buffers));
+          AddScalarParameter(zkey_additional_data.beta_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.gamma_g2, &buffers));
+          AddScalarParameter(zkey_additional_data.gamma_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.delta_g2, &buffers));
+          AddScalarParameter(zkey_additional_data.delta_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.beta_g1, &buffers));
+          AddScalarParameter(zkey_additional_data.beta_g1, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(*pk.verifying_key.delta_g1, &buffers));
+          AddScalarParameter(zkey_additional_data.delta_g1, &buffers));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
           options, "a_g1_query.bin", ShapeUtil::MakeShape(BN254_G1_AFFINE, {m}),
           &buffers, &regions));
@@ -379,9 +377,6 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   base::SubParser& prove_parser =
       parser.AddSubParser().set_name("prove").set_help(
           "Generate a proof using compiled Groth16 prover");
-  prove_parser.AddFlag<base::StringFlag>(&options.zkey_path)
-      .set_name("zkey")
-      .set_help("Path to the .zkey file (Groth16 proving key)");
   prove_parser.AddFlag<base::StringFlag>(&options.wtns_path)
       .set_name("wtns")
       .set_help("Path to the witness (.wtns) file");

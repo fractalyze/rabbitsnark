@@ -167,6 +167,42 @@ absl::Status WriteTwiddlesToFile(
 }  // namespace
 
 template <typename Curve>
+struct ZKeyAdditionalData {
+  using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
+  using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
+
+  int64_t l;
+  int64_t m;
+  int64_t n;
+
+  G1AffinePoint alpha_g1;
+  G2AffinePoint beta_g2;
+  G2AffinePoint gamma_g2;
+  G2AffinePoint delta_g2;
+  G1AffinePoint beta_g1;
+  G1AffinePoint delta_g1;
+
+  absl::Status WriteToFile(std::string_view output_dir) const {
+    return tsl::WriteStringToFile(
+        tsl::Env::Default(),
+        tsl::io::JoinPath(output_dir, "zkey_additional_data.bin"),
+        std::string_view(reinterpret_cast<const char*>(this),
+                         sizeof(ZKeyAdditionalData)));
+  }
+
+  static absl::StatusOr<ZKeyAdditionalData> ReadFromFile(
+      std::string_view output_dir) {
+    std::string content;
+    TF_RETURN_IF_ERROR(tsl::ReadFileToString(
+        tsl::Env::Default(),
+        tsl::io::JoinPath(output_dir, "zkey_additional_data.bin"), &content));
+    ZKeyAdditionalData additional_data;
+    memcpy(&additional_data, content.data(), sizeof(ZKeyAdditionalData));
+    return std::move(additional_data);
+  }
+};
+
+template <typename Curve>
 absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
                                         int32_t h_msm_window_bits,
                                         int32_t non_h_msm_window_bits,
@@ -202,6 +238,17 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
   CHECK_EQ(pk.c_g1_query.size(), m - l - 1);
   CHECK_EQ(pk.h_g1_query.size(), n);
 
+  ZKeyAdditionalData<Curve> additional_data;
+  additional_data.l = l;
+  additional_data.m = m;
+  additional_data.n = n;
+  additional_data.alpha_g1 = *pk.verifying_key.alpha_g1;
+  additional_data.beta_g2 = *pk.verifying_key.beta_g2;
+  additional_data.gamma_g2 = *pk.verifying_key.gamma_g2;
+  additional_data.delta_g2 = *pk.verifying_key.delta_g2;
+  additional_data.beta_g1 = *pk.verifying_key.beta_g1;
+  additional_data.delta_g1 = *pk.verifying_key.delta_g1;
+
   // TODO(chokobole): Use `output_dir` instead of `std::string(output_dir)`
   // after `CreateDir()` can accept `std::string_view`.
   absl::Status s = tsl::Env::Default()->CreateDir(std::string(output_dir));
@@ -209,6 +256,7 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
     return s;
   }
 
+  TF_RETURN_IF_ERROR(additional_data.WriteToFile(output_dir));
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.a_g1_query, output_dir, "a_g1_query"));
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.b_g1_query, output_dir, "b_g1_query"));
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.b_g2_query, output_dir, "b_g2_query"));
