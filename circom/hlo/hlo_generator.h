@@ -202,6 +202,13 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
   CHECK_EQ(pk.c_g1_query.size(), m - l - 1);
   CHECK_EQ(pk.h_g1_query.size(), n);
 
+  // TODO(chokobole): Use `output_dir` instead of `std::string(output_dir)`
+  // after `CreateDir()` can accept `std::string_view`.
+  absl::Status s = tsl::Env::Default()->CreateDir(std::string(output_dir));
+  if (!(s.ok() || absl::IsAlreadyExists(s))) {
+    return s;
+  }
+
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.a_g1_query, output_dir, "a_g1_query"));
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.b_g1_query, output_dir, "b_g1_query"));
   TF_RETURN_IF_ERROR(WriteSpanToFile(pk.b_g2_query, output_dir, "b_g2_query"));
