@@ -16,6 +16,7 @@ zkx_cc_library(
         "@zkx//zkx/base:auto_reset",
         "@zkx//zkx/base:logging",
         "@zkx//zkx/base/buffer:vector_buffer",
+        "@zkx//zkx/math/base:batch_inverse",
         "@zkx//zkx/math/poly:bit_reverse",
         "@zkx//zkx/math/poly:root_of_unity",
     ],
