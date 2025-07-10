@@ -182,12 +182,6 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     int64_t m = zkey_additional_data.m;
     int64_t n = zkey_additional_data.n;
 
-    std::unique_ptr<Wtns<F>> wtns;
-    RUN_WITH_PROFILE("parsing witness", {
-      TF_ASSIGN_OR_RETURN(wtns, ParseWtns<F>(options.wtns_path));
-      CHECK_EQ(wtns->GetVersion(), 2);
-    });
-
     std::vector<ScopedShapedBuffer> buffers;
     std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>> regions;
     RUN_WITH_PROFILE("sending zkey parameters", {
@@ -227,16 +221,30 @@ class CommandRunnerImpl : public CommandRunnerInterface {
           options, "twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
           &buffers, &regions));
     });
-    RUN_WITH_PROFILE("sending witness parameters", {
-      TF_RETURN_IF_ERROR(AddVectorParameter(wtns->GetWitnesses(), &buffers));
-      if (options.no_zk) {
-        TF_RETURN_IF_ERROR(AddScalarParameter(F(0), &buffers));
-        TF_RETURN_IF_ERROR(AddScalarParameter(F(0), &buffers));
-      } else {
-        TF_RETURN_IF_ERROR(AddScalarParameter(F::Random(), &buffers));
-        TF_RETURN_IF_ERROR(AddScalarParameter(F::Random(), &buffers));
-      }
-    });
+
+    std::vector<F> public_values;
+    {
+      std::unique_ptr<Wtns<F>> wtns;
+      RUN_WITH_PROFILE("parsing witness", {
+        TF_ASSIGN_OR_RETURN(wtns, ParseWtns<F>(options.wtns_path));
+        CHECK_EQ(wtns->GetVersion(), 2);
+        absl::Span<const F> public_values_span =
+            wtns->GetWitnesses().subspan(1, l);
+        public_values.assign(public_values_span.begin(),
+                             public_values_span.end());
+      });
+
+      RUN_WITH_PROFILE("sending witness parameters", {
+        TF_RETURN_IF_ERROR(AddVectorParameter(wtns->GetWitnesses(), &buffers));
+        if (options.no_zk) {
+          TF_RETURN_IF_ERROR(AddScalarParameter(F(0), &buffers));
+          TF_RETURN_IF_ERROR(AddScalarParameter(F(0), &buffers));
+        } else {
+          TF_RETURN_IF_ERROR(AddScalarParameter(F::Random(), &buffers));
+          TF_RETURN_IF_ERROR(AddScalarParameter(F::Random(), &buffers));
+        }
+      });
+    }
 
     Literal proof;
     RUN_WITH_PROFILE("generating proof", {
@@ -253,7 +261,6 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     TF_RETURN_IF_ERROR(WriteProofToJson<Curve>(proof, options.proof_path));
     std::cout << "Proof is saved to \"" << options.proof_path << "\""
               << std::endl;
-    absl::Span<const F> public_values = wtns->GetWitnesses().subspan(1, l);
     TF_RETURN_IF_ERROR(
         WritePublicToJson<F>(public_values, options.public_path));
     std::cout << "Public values are saved to \"" << options.public_path << "\""
