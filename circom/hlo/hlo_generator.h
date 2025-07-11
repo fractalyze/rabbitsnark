@@ -70,12 +70,14 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %h.evals.tmp = bn254.sf[$n] multiply(%a.evals, %b.evals)
   %h.evals = bn254.sf[$n] subtract(%h.evals.tmp, %c.evals)
 
+  %h.evals.in_std = bn254.sf[$n]{0:MONT(false)} convert(%h.evals)
+
   %msm_1 = bn254.g1_xyzz[] msm(%z, %pk.a_g1_query), window_bits=$non_h_msm_window_bits
   %msm_2 = bn254.g1_xyzz[] msm(%z, %pk.b_g1_query), window_bits=$non_h_msm_window_bits
   %msm_3 = bn254.g2_xyzz[] msm(%z, %pk.b_g2_query), window_bits=$non_h_msm_window_bits
   %z.witness = bn254.sf[$(m - l - 1)]{0:MONT(false)} slice(%z), slice={[$(l + 1):$m]}
   %msm_4 = bn254.g1_xyzz[] msm(%z.witness, %pk.l_g1_query), window_bits=$non_h_msm_window_bits
-  %msm_5 = bn254.g1_xyzz[] msm(%h.evals, %pk.h_g1_query), window_bits=$h_msm_window_bits
+  %msm_5 = bn254.g1_xyzz[] msm(%h.evals.in_std, %pk.h_g1_query), window_bits=$h_msm_window_bits
 
   %proof.A.tmp = bn254.g1_xyzz[] add(%vk.alpha_g1, %msm_1)
   %r_delta_g1 = bn254.g1_xyzz[] multiply(%r, %pk.delta_g1)
