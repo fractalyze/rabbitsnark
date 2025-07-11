@@ -64,12 +64,11 @@ bazel-bin/prover_main compile zkey output [OPTIONS]
 ### Subcommand: `prove`
 
 ```shell
-bazel-bin/prover_main prove zkey wtns proof public output [OPTIONS]
+bazel-bin/prover_main prove wtns proof public output [OPTIONS]
 ```
 
 #### Positional arguments for `prove`
 
-- `zkey`: Path to the `.zkey` file (Groth16 proving key)
 - `wtns`: Path to the witness (`.wtns`) file
 - `proof`: Output path for proof (`.json`)
 - `public`: Output path for public inputs (`.json`)
