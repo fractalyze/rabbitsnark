@@ -9,6 +9,7 @@
 #include "rapidjson/document.h"
 
 #include "circom/json/json_writer.h"
+#include "zkx/literal.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
 #include "zkx/math/geometry/point_declarations.h"
 

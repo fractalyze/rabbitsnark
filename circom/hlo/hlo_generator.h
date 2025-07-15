@@ -13,15 +13,10 @@
 #include "circom/zkey/zkey.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/path.h"
-#include "zkx/base/auto_reset.h"
-#include "zkx/base/buffer/vector_buffer.h"
 #include "zkx/base/logging.h"
-#include "zkx/literal.h"
 #include "zkx/math/base/batch_inverse.h"
 #include "zkx/math/poly/bit_reverse.h"
 #include "zkx/math/poly/root_of_unity.h"
-#include "zkx/primitive_util.h"
-#include "zkx/shape_util.h"
 
 namespace zkx::circom {
 namespace {
