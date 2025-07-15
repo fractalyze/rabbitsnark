@@ -83,7 +83,7 @@ absl::Status WriteFFTTwiddlesToFile(
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
 
   std::vector<T> fft_twiddles(domain_size);
-  T x = w;
+  T x = 1;
   for (int64_t i = 0; i < domain_size; ++i) {
     fft_twiddles[i] = x;
     x *= w;
@@ -99,7 +99,7 @@ absl::Status WriteIFFTTwiddlesToFile(
     std::map<std::string, std::string>& replacements) {
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
 
-  T x = w;
+  T x = 1;
   std::vector<T> ifft_twiddles(domain_size);
   for (int64_t i = 0; i < domain_size; ++i) {
     ifft_twiddles[i] = x;
