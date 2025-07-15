@@ -3,15 +3,17 @@ load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
 package(default_visibility = ["//visibility:public"])
 
 zkx_cc_library(
-    name = "hlo_generator",
-    hdrs = ["hlo_generator.h"],
+    name = "hlo_generator_util",
+    hdrs = ["hlo_generator_util.h"],
     deps = [
-        "//circom/zkey",
-        "//common/hlo:hlo_generator_util",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
         "@zkx//xla/tsl/platform:env",
         "@zkx//xla/tsl/platform:path",
         "@zkx//zkx/base:logging",
-        "@zkx//zkx/math/poly:bit_reverse",
+        "@zkx//zkx/math/base:batch_inverse",
+        "@zkx//zkx/math/base:sparse_matrix",
+        "@zkx//zkx/math/poly:root_of_unity",
     ],
 )

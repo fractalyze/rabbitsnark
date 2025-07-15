@@ -2,21 +2,18 @@
 #define CIRCOM_HLO_HLO_GENERATOR_H_
 
 #include <map>
-#include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
+#include "common/hlo/hlo_generator_util.h"
 
 #include "circom/zkey/zkey.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/path.h"
 #include "zkx/base/logging.h"
-#include "zkx/math/base/batch_inverse.h"
 #include "zkx/math/poly/bit_reverse.h"
-#include "zkx/math/poly/root_of_unity.h"
 
 namespace zkx::circom {
 namespace {
@@ -106,28 +103,6 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
 )";
 
 template <typename T>
-absl::Status WriteSpanToFile(absl::Span<const T> span,
-                             std::string_view output_dir,
-                             std::string_view name) {
-  std::string basename = absl::StrCat(name, ".bin");
-  return tsl::WriteStringToFile(
-      tsl::Env::Default(), tsl::io::JoinPath(output_dir, basename),
-      std::string_view(reinterpret_cast<const char*>(span.data()),
-                       span.size() * sizeof(T)));
-}
-
-template <typename T>
-absl::Status WriteCSRSparseMatrixToFile(
-    const math::SparseMatrix<T>& matrix, std::string_view output_dir,
-    std::string_view name, std::map<std::string, std::string>& replacements) {
-  TF_ASSIGN_OR_RETURN(std::vector<uint8_t> buffer,
-                      matrix.ToCSRBuffer(/*sort=*/true));
-  replacements[absl::StrCat("$", name, "_num_non_zeros")] =
-      absl::StrCat(matrix.NumNonZeros());
-  return WriteSpanToFile(absl::MakeConstSpan(buffer), output_dir, name);
-}
-
-template <typename T>
 absl::Status WriteABMatricesToFile(
     size_t num_rows, size_t num_cols,
     const std::vector<Coefficient<T>>& coefficients,
@@ -162,78 +137,7 @@ absl::Status WriteTwiddlesToFile(
   return WriteSpanToFile(absl::MakeConstSpan(twiddles), output_dir, "twiddles");
 }
 
-template <typename T>
-absl::Status WriteFFTTwiddlesToFile(
-    size_t domain_size, std::string_view output_dir,
-    std::map<std::string, std::string>& replacements) {
-  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
-
-  std::vector<T> fft_twiddles(domain_size);
-  T x = w;
-  for (int64_t i = 0; i < domain_size; ++i) {
-    fft_twiddles[i] = x;
-    x *= w;
-  }
-
-  return WriteSpanToFile(absl::MakeConstSpan(fft_twiddles), output_dir,
-                         "fft_twiddles");
-}
-
-template <typename T>
-absl::Status WriteIFFTTwiddlesToFile(
-    size_t domain_size, std::string_view output_dir,
-    std::map<std::string, std::string>& replacements) {
-  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
-
-  T x = w;
-  std::vector<T> ifft_twiddles(domain_size);
-  for (int64_t i = 0; i < domain_size; ++i) {
-    ifft_twiddles[i] = x;
-    x *= w;
-  }
-  TF_RETURN_IF_ERROR(math::BatchInverse(ifft_twiddles, &ifft_twiddles));
-
-  return WriteSpanToFile(absl::MakeConstSpan(ifft_twiddles), output_dir,
-                         "ifft_twiddles");
-}
-
 }  // namespace
-
-template <typename Curve>
-struct ZKeyAdditionalData {
-  using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
-  using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
-
-  int64_t l;
-  int64_t m;
-  int64_t n;
-
-  G1AffinePoint alpha_g1;
-  G2AffinePoint beta_g2;
-  G2AffinePoint gamma_g2;
-  G2AffinePoint delta_g2;
-  G1AffinePoint beta_g1;
-  G1AffinePoint delta_g1;
-
-  absl::Status WriteToFile(std::string_view output_dir) const {
-    return tsl::WriteStringToFile(
-        tsl::Env::Default(),
-        tsl::io::JoinPath(output_dir, "zkey_additional_data.bin"),
-        std::string_view(reinterpret_cast<const char*>(this),
-                         sizeof(ZKeyAdditionalData)));
-  }
-
-  static absl::StatusOr<ZKeyAdditionalData> ReadFromFile(
-      std::string_view output_dir) {
-    std::string content;
-    TF_RETURN_IF_ERROR(tsl::ReadFileToString(
-        tsl::Env::Default(),
-        tsl::io::JoinPath(output_dir, "zkey_additional_data.bin"), &content));
-    ZKeyAdditionalData additional_data;
-    memcpy(&additional_data, content.data(), sizeof(ZKeyAdditionalData));
-    return std::move(additional_data);
-  }
-};
 
 template <typename Curve>
 absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
@@ -271,7 +175,7 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
   CHECK_EQ(pk.c_g1_query.size(), m - l - 1);
   CHECK_EQ(pk.h_g1_query.size(), n);
 
-  ZKeyAdditionalData<Curve> additional_data;
+  ProvingKeyAdditionalData<Curve> additional_data;
   additional_data.l = l;
   additional_data.m = m;
   additional_data.n = n;

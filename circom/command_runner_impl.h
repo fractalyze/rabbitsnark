@@ -117,32 +117,32 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       opaque_executable = runner_.WrapExecutable(std::move(executable));
     });
 
-    ZKeyAdditionalData<Curve> zkey_additional_data;
-    RUN_WITH_PROFILE("loading zkey additional data", {
+    ProvingKeyAdditionalData<Curve> pk_additional_data;
+    RUN_WITH_PROFILE("loading pk additional data", {
       TF_ASSIGN_OR_RETURN(
-          zkey_additional_data,
-          ZKeyAdditionalData<Curve>::ReadFromFile(options.output_dir));
+          pk_additional_data,
+          ProvingKeyAdditionalData<Curve>::ReadFromFile(options.output_dir));
     });
 
-    int64_t l = zkey_additional_data.l;
-    int64_t m = zkey_additional_data.m;
-    int64_t n = zkey_additional_data.n;
+    int64_t l = pk_additional_data.l;
+    int64_t m = pk_additional_data.m;
+    int64_t n = pk_additional_data.n;
 
     std::vector<ScopedShapedBuffer> buffers;
     std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>> regions;
     RUN_WITH_PROFILE("sending zkey parameters", {
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.alpha_g1, &buffers));
+          AddScalarParameter(pk_additional_data.alpha_g1, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.beta_g2, &buffers));
+          AddScalarParameter(pk_additional_data.beta_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.gamma_g2, &buffers));
+          AddScalarParameter(pk_additional_data.gamma_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.delta_g2, &buffers));
+          AddScalarParameter(pk_additional_data.delta_g2, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.beta_g1, &buffers));
+          AddScalarParameter(pk_additional_data.beta_g1, &buffers));
       TF_RETURN_IF_ERROR(
-          AddScalarParameter(zkey_additional_data.delta_g1, &buffers));
+          AddScalarParameter(pk_additional_data.delta_g1, &buffers));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
           options, "a_g1_query.bin", ShapeUtil::MakeShape(BN254_G1_AFFINE, {m}),
           &buffers, &regions));
