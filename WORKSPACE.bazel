@@ -1,8 +1,8 @@
-workspace(name = "groth16")
+workspace(name = "rabbitsnark")
 
-load("//bazel:groth16_deps.bzl", "groth16_deps")
+load("//bazel:rabbitsnark_deps.bzl", "rabbitsnark_deps")
 
-groth16_deps()
+rabbitsnark_deps()
 
 load("@zkx//bazel:zkx_deps.bzl", "zkx_deps")
 

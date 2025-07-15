@@ -1,4 +1,4 @@
-# For projects which use groth16 as part of a Bazel build process, putting
+# For projects which use rabbitsnark as part of a Bazel build process, putting
 # nothing in a bazelrc will default to a monolithic build. The following line
 # opts in to modular op registration support by default.
 build -c opt
@@ -25,7 +25,7 @@ build:dbg -c dbg
 # Opt config
 build:opt -c opt
 
-# By default, build groth16 in C++ 17 mode.
+# By default, build rabbitsnark in C++ 17 mode.
 build:linux --cxxopt=-std=c++17
 build:linux --host_cxxopt=-std=c++17
 build:macos --cxxopt=-std=c++17

@@ -1,4 +1,4 @@
-# Groth16
+# RabbitSNARK
 
 This is a command-line tool for generating zero-knowledge proofs using the Groth16 proving system. It is built with the [ZKIR](https://github.com/zk-rabbit/zkir) and utilizes [ZKX](zkx). The tool is designed to handle [circom](https://docs.circom.io/getting-started/installation/)-style circuits and supports both standard and non-zero-knowledge (non-ZK) proof generation modes.
 
@@ -7,20 +7,20 @@ This is a command-line tool for generating zero-knowledge proofs using the Groth
 1. Clone the required repositories
 
    ```shell
-   git clone https://github.com/zk-rabbit/groth16.git
+   git clone https://github.com/zk-rabbit/rabbitsnark.git
    git clone https://github.com/zk-rabbit/zkir.git
    git clone https://github.com/zk-rabbit/zkx.git
    ```
 
    Make sure all three repositories are cloned into the same parent directory, as Bazel uses relative path dependencies.
 
-1. Navigate to the groth16 project directory
+1. Navigate to the RabbitSNARK project directory
 
    ```shell
-   cd groth16
+   cd rabbitsnark
    ```
 
-1. Build the Groth16 Prover binary
+1. Build the RabbitSNARK Prover binary
 
    ```shell
    bazel build --@zkx//:has_openmp //:prover_main
