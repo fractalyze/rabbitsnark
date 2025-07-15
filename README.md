@@ -47,12 +47,12 @@ bazel-bin/prover_main [OPTIONS] COMMAND
 ### Subcommand: `compile`
 
 ```shell
-bazel-bin/prover_main compile zkey output [OPTIONS]
+bazel-bin/prover_main circom compile proving_key output [OPTIONS]
 ```
 
 #### Positional arguments for `compile`
 
-- `zkey`: Path to the `.zkey` file (Groth16 proving key)
+- `zkey`: Path to the Groth16 proving key (`.zkey` for circom)
 - `output`: Directory to store compiled prover output
 
 #### Optional flags for `compile`
@@ -64,12 +64,12 @@ bazel-bin/prover_main compile zkey output [OPTIONS]
 ### Subcommand: `prove`
 
 ```shell
-bazel-bin/prover_main prove wtns proof public output [OPTIONS]
+bazel-bin/prover_main circom prove witness proof public output [OPTIONS]
 ```
 
 #### Positional arguments for `prove`
 
-- `wtns`: Path to the witness (`.wtns`) file
+- `witness`: Path to the witness (`.wtns` for circom)
 - `proof`: Output path for proof (`.json`)
 - `public`: Output path for public inputs (`.json`)
 - `output`: Directory containing compiled prover files

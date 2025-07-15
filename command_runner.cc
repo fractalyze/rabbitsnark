@@ -35,19 +35,15 @@ class FlagValueTraits<Curve> {
 
 }  // namespace base
 
-absl::Status CommandRunner::Run(int argc, char** argv) {
-  Options options;
-  Curve curve;
-  int vlog_level;
+namespace {
 
-  base::FlagParser parser;
-
+void AddCompileCommand(base::SubParser& parser, Options& options) {
   base::SubParser& compile_parser =
       parser.AddSubParser().set_name("compile").set_help(
           "Compile the Groth16 prover");
   compile_parser.AddFlag<base::StringFlag>(&options.proving_key_path)
-      .set_name("zkey")
-      .set_help("Path to the .zkey file (Groth16 proving key)");
+      .set_name("proving_key")
+      .set_help("Path to the Groth16 proving key (`.zkey` for circom)");
   compile_parser.AddFlag<base::StringFlag>(&options.output_dir)
       .set_name("output")
       .set_help("Directory to store compiled prover output");
@@ -80,13 +76,15 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
           "Skip HLO generation from zkey (including sparse matrix processing). "
           "Intended for compiler developers to speed up iterative compilation "
           "tests when HLO has already been generated once.");
+}
 
+void AddProveCommand(base::SubParser& parser, Options& options) {
   base::SubParser& prove_parser =
       parser.AddSubParser().set_name("prove").set_help(
           "Generate a proof using compiled Groth16 prover");
   prove_parser.AddFlag<base::StringFlag>(&options.witness_path)
       .set_name("witness")
-      .set_help("Path to the witness (.wtns) file");
+      .set_help("Path to the witness (`.wtns` for circom)");
   prove_parser.AddFlag<base::StringFlag>(&options.proof_path)
       .set_name("proof")
       .set_help("Output path for proof (.json)");
@@ -102,6 +100,21 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
       .set_help(
           "Disable zero-knowledge (for debugging or comparison with "
           "RapidSnark). Disabled by default.");
+}
+
+}  // namespace
+
+absl::Status CommandRunner::Run(int argc, char** argv) {
+  Options options;
+  Curve curve;
+  int vlog_level;
+
+  base::FlagParser parser;
+
+  base::SubParser& circom_parser = parser.AddSubParser().set_name("circom");
+
+  AddCompileCommand(circom_parser, options);
+  AddProveCommand(circom_parser, options);
 
   parser.AddFlag<base::Flag<Curve>>(&curve)
       .set_long_name("--curve")
@@ -121,15 +134,22 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   }
 
   std::unique_ptr<CommandRunnerInterface> interface;
-  if (curve == Curve::kBn254) {
-    interface.reset(new circom::CommandRunnerImpl<math::bn254::Curve>());
-  } else {
-    return absl::InternalError("Invalid curve");
+  if (circom_parser.is_set()) {
+    if (curve == Curve::kBn254) {
+      interface.reset(new circom::CommandRunnerImpl<math::bn254::Curve>());
+    } else {
+      return absl::InternalError("Invalid curve");
+    }
   }
-  if (compile_parser.is_set()) {
-    return interface->Compile(options);
-  } else if (prove_parser.is_set()) {
-    return interface->Prove(options);
+
+  for (const auto& flag : *circom_parser.flags()) {
+    if (flag->is_set()) {
+      if (flag->name() == "compile") {
+        return interface->Compile(options);
+      } else if (flag->name() == "prove") {
+        return interface->Prove(options);
+      }
+    }
   }
 
   return absl::InternalError("No subcommand is set");
