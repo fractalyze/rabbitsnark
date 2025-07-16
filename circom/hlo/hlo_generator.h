@@ -191,7 +191,7 @@ absl::Status WriteIFFTTwiddlesToFile(
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
 
   T x = w;
-  std::vector<math::bn254::Fr> ifft_twiddles(domain_size);
+  std::vector<T> ifft_twiddles(domain_size);
   for (int64_t i = 0; i < domain_size; ++i) {
     ifft_twiddles[i] = x;
     x *= w;
