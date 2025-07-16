@@ -4,15 +4,11 @@ This is a command-line tool for generating zero-knowledge proofs using the Groth
 
 ## How to build
 
-1. Clone the required repositories
+1. Clone the RabbitSNARK repository
 
    ```shell
    git clone https://github.com/zk-rabbit/rabbitsnark.git
-   git clone https://github.com/zk-rabbit/zkir.git
-   git clone https://github.com/zk-rabbit/zkx.git
    ```
-
-   Make sure all three repositories are cloned into the same parent directory, as Bazel uses relative path dependencies.
 
 1. Navigate to the RabbitSNARK project directory
 
