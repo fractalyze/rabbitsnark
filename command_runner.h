@@ -3,7 +3,7 @@
 
 #include "absl/status/status.h"
 
-namespace zkx::circom {
+namespace zkx {
 
 class CommandRunner {
  public:
@@ -15,6 +15,6 @@ class CommandRunner {
   absl::Status Run(int argc, char** argv);
 };
 
-}  // namespace zkx::circom
+}  // namespace zkx
 
 #endif  // COMMAND_RUNNER_H_

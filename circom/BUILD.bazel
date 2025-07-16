@@ -1,0 +1,22 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "command_runner_impl",
+    hdrs = ["command_runner_impl.h"],
+    deps = [
+        "//circom/hlo:hlo_generator",
+        "//circom/json:proof_writer",
+        "//circom/json:public_writer",
+        "//circom/wtns",
+        "//circom/zkey",
+        "//common:command_runner_interface",
+        "//common:profiler",
+        "@com_google_absl//absl/strings",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//xla/tsl/platform:path",
+        "@zkx//xla/tsl/platform:statusor",
+    ],
+)

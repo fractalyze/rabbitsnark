@@ -1,0 +1,27 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "command_runner_interface",
+    srcs = ["command_runner_interface.cc"],
+    hdrs = ["command_runner_interface.h"],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:path",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:primitive_util",
+        "@zkx//zkx/service:hlo_runner",
+        "@zkx//zkx/service:platform_util",
+        "@zkx//zkx/service/cpu:cpu_compiler_registerer",
+        "@zkx//zkx/service/cpu:cpu_transfer_manager",
+        "@zkx//zkx/stream_executor/host:host_platform",
+    ],
+)
+
+zkx_cc_library(
+    name = "profiler",
+    hdrs = ["profiler.h"],
+    deps = ["@com_google_absl//absl/time"],
+)
