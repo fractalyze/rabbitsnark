@@ -53,7 +53,6 @@ struct ZKey {
 
 constexpr char kZKeyMagic[4] = {'z', 'k', 'e', 'y'};
 
-// Return nullptr if the parser failed to parse.
 template <typename Curve>
 absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(
     const std::string& path, bool process_coefficients) {
