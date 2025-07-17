@@ -1,0 +1,22 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "reader_utils",
+    srcs = ["reader_utils.cc"],
+    hdrs = ["reader_utils.h"],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base/buffer:endian_auto_reset",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_library(
+    name = "serde_mode",
+    srcs = ["serde_mode.cc"],
+    hdrs = ["serde_mode.h"],
+    deps = ["@zkx//zkx/math/elliptic_curves/short_weierstrass:affine_point"],
+)

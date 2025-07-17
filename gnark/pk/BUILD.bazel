@@ -1,0 +1,33 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_unittest")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "proving_key",
+    hdrs = ["proving_key.h"],
+    deps = [
+        "//gnark:reader_utils",
+        "//gnark:serde_mode",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:endian_auto_reset",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_unittest(
+    name = "pk_unittests",
+    srcs = ["proving_key_unittest.cc"],
+    data = [
+        "pk.bin",
+        "pk.dump.bin",
+        "pk.raw.bin",
+    ],
+    deps = [
+        ":proving_key",
+        "@zkx//xla/tsl/platform:statusor",
+        "@zkx//zkx/base/containers:container_util",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:curve",
+    ],
+)
