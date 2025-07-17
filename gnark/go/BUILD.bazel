@@ -1,0 +1,54 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_cc//cc:defs.bzl", "cc_import")
+
+# gazelle:prefix github.com/zk-rabbit/rabbitsnark/gnark/go
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+go_library(
+    name = "gnark",
+    srcs = ["gnark.go"],
+    cgo = True,
+    importpath = "github.com/zk-rabbit/rabbitsnark/gnark/go",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_consensys_gnark//backend",
+        "@com_github_consensys_gnark//backend/groth16",
+        "@com_github_consensys_gnark//backend/groth16/bn254",
+        "@com_github_consensys_gnark//backend/witness",
+        "@com_github_consensys_gnark//constraint",
+        "@com_github_consensys_gnark//constraint/bn254",
+        "@com_github_consensys_gnark//constraint/solver",
+        "@com_github_consensys_gnark//frontend/cs",
+        "@com_github_consensys_gnark_crypto//ecc",
+        "@com_github_consensys_gnark_crypto//ecc/bn254",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/fr",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/fr/hash_to_field",
+    ],
+)
+
+go_binary(
+    name = "libgnark",
+    embed = [":gnark"],
+    gc_linkopts = ["-buildmode=c-shared"],
+    linkmode = "c-shared",
+    visibility = ["//visibility:public"],
+)
+
+cc_import(
+    name = "gnark_cc",
+    hdrs = ["gnark_go/gnark.h"],
+    includes = ["."],
+    shared_library = ":libgnark",
+    visibility = ["//visibility:public"],
+)

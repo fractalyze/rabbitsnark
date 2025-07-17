@@ -59,5 +59,8 @@ build --@zkx//:has_exception
 #    26 | #define NULL ((void*)0)
 build --noenable_bzlmod
 
+# For details, see the explanation in gnark/go/.bazelrc
+build --spawn_strategy=local
+
 # Load rc file with user-specific options.
 try-import %workspace%/.bazelrc.user
