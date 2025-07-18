@@ -1,0 +1,2 @@
+# For details, see the explanation in gnark/go/.bazelrc
+build --spawn_strategy=local
