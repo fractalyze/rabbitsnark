@@ -1,4 +1,10 @@
+load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
 load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_binary", "zkx_cc_library")
+
+refresh_compile_commands(
+    name = "refresh_compile_commands",
+    targets = ["//:all"],
+)
 
 zkx_cc_library(
     name = "command_runner",
