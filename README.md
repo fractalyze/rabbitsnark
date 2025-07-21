@@ -24,6 +24,8 @@ This is a command-line tool for generating zero-knowledge proofs using the Groth
 
    This will compile the prover_main binary with OpenMP support for parallelism. After the build completes successfully, the binary will be located at `bazel-bin/prover_main`.
 
+   If you're generating Groth16 proofs using SP1 with Gnark, add the `--//gnark:has_sp1` flag when building.
+
 ## How to run
 
 ```shell
@@ -43,12 +45,11 @@ bazel-bin/prover_main [OPTIONS] COMMAND
 ### Subcommand: `compile`
 
 ```shell
-bazel-bin/prover_main circom compile proving_key output [OPTIONS]
+bazel-bin/prover_main circuit_dsl compile proving_key output [OPTIONS]
 ```
 
-#### Positional arguments for `compile`
-
-- `zkey`: Path to the Groth16 proving key (`.zkey` for circom)
+- `circuit_dsl`: Type of ZK proof circuit DSL (`circom` or `gnark`)
+- `proving_key`: Path to the Groth16 proving key (`.zkey` for circom, `.bin` for gnark)
 - `output`: Directory to store compiled prover output
 
 #### Optional flags for `compile`
@@ -59,15 +60,30 @@ bazel-bin/prover_main circom compile proving_key output [OPTIONS]
 
 ### Subcommand: `prove`
 
+#### Circom
+
 ```shell
 bazel-bin/prover_main circom prove witness proof public output [OPTIONS]
 ```
 
-#### Positional arguments for `prove`
-
-- `witness`: Path to the witness (`.wtns` for circom)
+- `witness`: Path to the witness (`.wtns`)
 - `proof`: Output path for proof (`.json`)
 - `public`: Output path for public inputs (`.json`)
+- `output`: Directory containing compiled prover files
+
+#### Gnark
+
+All files are inputted as `.bin` for gnark
+
+```shell
+bazel-bin/prover_main gnark prove r1cs proving_key witness proof public output [OPTIONS]
+```
+
+- `r1cs`: Path to the r1cs (`.bin`)
+- `proving_key`: Path to the proving key (`.bin`)
+- `witness`: Path to the witness. If the binary was built with `--//gnark:has_sp1`, this should point to the input witness JSON file (`.json`); otherwise, provide a binary witness file (`.bin`).
+- `proof`: Output path for proof (`.bin`)
+- `public`: Output path for public inputs (`.bin`)
 - `output`: Directory containing compiled prover files
 
 #### Optional flags for `prove`
