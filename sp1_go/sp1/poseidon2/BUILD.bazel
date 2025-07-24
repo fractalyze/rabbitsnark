@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "poseidon2",
+    srcs = [
+        "constants.go",
+        "poseidon2.go",
+        "poseidon2_babybear.go",
+        "utils.go",
+    ],
+    importpath = "github.com/succinctlabs/sp1-recursion-gnark/sp1/poseidon2",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//sp1/babybear",
+        "@com_github_consensys_gnark//frontend",
+    ],
+)
+
+go_test(
+    name = "poseidon2_test",
+    srcs = ["poseidon2_test.go"],
+    embed = [":poseidon2"],
+    deps = [
+        "@com_github_consensys_gnark//backend",
+        "@com_github_consensys_gnark//frontend",
+        "@com_github_consensys_gnark//test",
+        "@com_github_consensys_gnark_crypto//ecc",
+    ],
+)

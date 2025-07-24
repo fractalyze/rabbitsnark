@@ -1,0 +1,3 @@
+bazel-*
+!go.mod
+libsp1.a

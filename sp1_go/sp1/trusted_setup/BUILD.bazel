@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "trusted_setup",
+    srcs = ["trusted_setup.go"],
+    importpath = "github.com/succinctlabs/sp1-recursion-gnark/sp1/trusted_setup",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_consensys_gnark//constraint",
+        "@com_github_consensys_gnark_crypto//ecc/bn254",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/fr",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/kzg",
+        "@com_github_consensys_gnark_crypto//kzg",
+        "@com_github_consensys_gnark_ignition_verifier//ignition",
+    ],
+)

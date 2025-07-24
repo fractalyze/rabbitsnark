@@ -1,0 +1,57 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+# gazelle:prefix github.com/succinctlabs/sp1-recursion-gnark
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+go_library(
+    name = "sp1-recursion-gnark_lib",
+    srcs = [
+        "babybear.h",
+        "libsp1.h",
+        "main.go",
+    ],
+    cgo = True,
+    importpath = "github.com/succinctlabs/sp1-recursion-gnark",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//sp1",
+        "@com_github_consensys_gnark//backend",
+        "@com_github_consensys_gnark//backend/groth16",
+        "@com_github_consensys_gnark//backend/groth16/bn254",
+        "@com_github_consensys_gnark//backend/witness",
+        "@com_github_consensys_gnark//constraint",
+        "@com_github_consensys_gnark//constraint/bn254",
+        "@com_github_consensys_gnark//constraint/solver",
+        "@com_github_consensys_gnark//frontend",
+        "@com_github_consensys_gnark//frontend/cs",
+        "@com_github_consensys_gnark_crypto//ecc",
+        "@com_github_consensys_gnark_crypto//ecc/bn254",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/fp/hash_to_field",
+        "@com_github_consensys_gnark_crypto//ecc/bn254/fr",
+    ],
+)
+
+go_binary(
+    name = "sp1-recursion-gnark",
+    embed = [":sp1-recursion-gnark_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "libsp1",
+    embed = [":sp1-recursion-gnark_lib"],
+    gc_linkopts = ["-buildmode=c-archive"],
+    linkmode = "c-archive",
+    visibility = ["//visibility:public"],
+)

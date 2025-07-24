@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "sp1",
+    srcs = [
+        "build.go",
+        "prove.go",
+        "sp1.go",
+        "test.go",
+        "utils.go",
+        "verify.go",
+    ],
+    importpath = "github.com/succinctlabs/sp1-recursion-gnark/sp1",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//sp1/babybear",
+        "//sp1/poseidon2",
+        "//sp1/trusted_setup",
+        "@com_github_consensys_gnark//backend/groth16",
+        "@com_github_consensys_gnark//backend/groth16/bn254",
+        "@com_github_consensys_gnark//backend/plonk",
+        "@com_github_consensys_gnark//backend/plonk/bn254",
+        "@com_github_consensys_gnark//constraint",
+        "@com_github_consensys_gnark//frontend",
+        "@com_github_consensys_gnark//frontend/cs/r1cs",
+        "@com_github_consensys_gnark//frontend/cs/scs",
+        "@com_github_consensys_gnark//test/unsafekzg",
+        "@com_github_consensys_gnark_crypto//ecc",
+        "@com_github_consensys_gnark_crypto//kzg",
+    ],
+)

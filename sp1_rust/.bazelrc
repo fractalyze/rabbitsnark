@@ -1,0 +1,5 @@
+# NOTE(chokobole): This is required to avoid an error.
+# ERROR: /private/var/tmp/_bazel_chokobole/d8bbd325536f01528f2c2fc1b05cd107/external/rules_rust/rust/platform/BUILD.bazel:6:24: no such target '@@platforms//os:uefi': target 'uefi' not declared in package 'os' defined by /private/var/tmp/_bazel_chokobole/d8bbd325536f01528f2c2fc1b05cd107/external/platforms/os/BUILD (Tip: use `query "@platforms//os:*"` to see all the targets in that package) and referenced by '@@rules_rust//rust/platform:x86_64-unknown-uefi'
+# ERROR: /private/var/tmp/_bazel_chokobole/d8bbd325536f01528f2c2fc1b05cd107/external/rules_rust_ctve__pathdiff-0.1.0/BUILD.bazel:13:13: errors encountered resolving select() keys for @@rules_rust_ctve__pathdiff-0.1.0//:pathdiff
+# ERROR: Analysis of target '//:babybear' failed; build aborted: Analysis failed
+build --noenable_bzlmod
