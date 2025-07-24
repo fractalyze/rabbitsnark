@@ -6,6 +6,7 @@
 #include "absl/strings/substitute.h"
 
 #include "circom/command_runner_impl.h"
+#include "gnark/command_runner_impl.h"
 #include "xla/tsl/platform/errors.h"
 #include "zkx/base/flag/flag_parser.h"
 #include "zkx/base/flag/flag_value_traits.h"
@@ -43,7 +44,9 @@ void AddCompileCommand(base::SubParser& parser, Options& options) {
           "Compile the Groth16 prover");
   compile_parser.AddFlag<base::StringFlag>(&options.proving_key_path)
       .set_name("proving_key")
-      .set_help("Path to the Groth16 proving key (`.zkey` for circom)");
+      .set_help(
+          "Path to the Groth16 proving key (`.zkey` for circom, `.bin` for "
+          "gnark)");
   compile_parser.AddFlag<base::StringFlag>(&options.output_dir)
       .set_name("output")
       .set_help("Directory to store compiled prover output");
@@ -82,15 +85,25 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
   base::SubParser& prove_parser =
       parser.AddSubParser().set_name("prove").set_help(
           "Generate a proof using compiled Groth16 prover");
+  if (parser.name() == "gnark") {
+    prove_parser.AddFlag<base::StringFlag>(&options.proving_key_path)
+        .set_name("proving_key")
+        .set_help("Path to the Groth16 proving key (`.bin`)");
+    prove_parser.AddFlag<base::StringFlag>(&options.r1cs_path)
+        .set_name("r1cs")
+        .set_help("Path to the R1CS (`.r1cs`)");
+  }
   prove_parser.AddFlag<base::StringFlag>(&options.witness_path)
       .set_name("witness")
       .set_help("Path to the witness (`.wtns` for circom)");
   prove_parser.AddFlag<base::StringFlag>(&options.proof_path)
       .set_name("proof")
-      .set_help("Output path for proof (.json)");
+      .set_help("Output path for proof (`.json` for circom, `.bin` for gnark)");
   prove_parser.AddFlag<base::StringFlag>(&options.public_path)
       .set_name("public")
-      .set_help("Output path for public inputs (.json)");
+      .set_help(
+          "Output path for public inputs (`.json` for circom, `.bin` for "
+          "gnark)");
   prove_parser.AddFlag<base::StringFlag>(&options.output_dir)
       .set_name("output")
       .set_help("Directory containing compiled prover files");
@@ -110,6 +123,11 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   int vlog_level;
 
   base::FlagParser parser;
+
+  base::SubParser& gnark_parser = parser.AddSubParser().set_name("gnark");
+
+  AddCompileCommand(gnark_parser, options);
+  AddProveCommand(gnark_parser, options);
 
   base::SubParser& circom_parser = parser.AddSubParser().set_name("circom");
 
@@ -134,25 +152,38 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   }
 
   std::unique_ptr<CommandRunnerInterface> interface;
-  if (circom_parser.is_set()) {
+  auto handle_parser =
+      [&](auto& parser,
+          std::function<CommandRunnerInterface*()> make_impl) -> absl::Status {
+    if (!parser.is_set()) return absl::OkStatus();
     if (curve == Curve::kBn254) {
-      interface.reset(new circom::CommandRunnerImpl<math::bn254::Curve>());
+      interface.reset(make_impl());
     } else {
       return absl::InternalError("Invalid curve");
     }
-  }
-
-  for (const auto& flag : *circom_parser.flags()) {
-    if (flag->is_set()) {
-      if (flag->name() == "compile") {
-        return interface->Compile(options);
-      } else if (flag->name() == "prove") {
-        return interface->Prove(options);
+    for (const auto& flag : *parser.flags()) {
+      if (flag->is_set()) {
+        if (flag->name() == "compile") {
+          return interface->Compile(options);
+        } else if (flag->name() == "prove") {
+          return interface->Prove(options);
+        }
       }
     }
-  }
+    return absl::InternalError("No subcommand is set");
+  };
 
-  return absl::InternalError("No subcommand is set");
+  absl::Status status = handle_parser(circom_parser, []() {
+    return new circom::CommandRunnerImpl<math::bn254::Curve>();
+  });
+  if (!status.ok()) return status;
+
+  status = handle_parser(gnark_parser, []() {
+    return new gnark::CommandRunnerImpl<math::bn254::Curve>();
+  });
+  if (!status.ok()) return status;
+
+  return absl::OkStatus();
 }
 
 }  // namespace zkx
