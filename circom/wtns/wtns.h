@@ -52,7 +52,6 @@ struct Wtns {
 
 constexpr char kWtnsMagic[4] = {'w', 't', 'n', 's'};
 
-// Return nullptr if the parser failed to parse.
 template <typename F>
 absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(const std::string& path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;

@@ -1,0 +1,9 @@
+# NOTE(chokobole): This is required to avoid the following error:
+#
+#   ERROR: /private/var/tmp/_bazel_chokobole/5de8ac45a5d32d2479265e7b249b0faa/external/com_github_consensys_gnark_crypto/ecc/bls12-381/fp/BUILD.bazel:3:11: GoCompilePkg external/com_github_consensys_gnark_crypto/ecc/bls12-381/fp/fp.a failed: (Exit 1): builder failed: error executing GoCompilePkg command (from target @@com_github_consensys_gnark_crypto//ecc/bls12-381/fp:fp) bazel-out/darwin_arm64-opt-exec-ST-13d3ddad9198/bin/external/go_sdk/builder_reset/builder compilepkg -sdk external/go_sdk -installsuffix darwin_arm64 -src ... (remaining 49 arguments skipped)
+#
+#   Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging
+#   external/com_github_consensys_gnark_crypto/ecc/bls12-381/fp/element_arm64.s:10: #include: open /var/folders/nz/field/asm/element_6w/element_6w_arm64.s: no such file or directory
+#   compilepkg: error running subcommand external/go_sdk/pkg/tool/darwin_arm64/asm: exit status 1
+#   Target //:solver failed to build
+build --spawn_strategy=local

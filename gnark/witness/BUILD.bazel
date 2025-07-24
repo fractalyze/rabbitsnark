@@ -1,0 +1,26 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_unittest")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "witness",
+    hdrs = ["witness.h"],
+    deps = [
+        "//gnark:reader_utils",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:endian_auto_reset",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+    ],
+)
+
+zkx_cc_unittest(
+    name = "witness_unittests",
+    srcs = ["witness_unittest.cc"],
+    data = ["witness.bin"],
+    deps = [
+        ":witness",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:fr",
+    ],
+)
