@@ -50,8 +50,8 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %Bz = bn254.sf[$n] dot(%B, %z.in_mont)
   %Cz = bn254.sf[$n] multiply(%Az, %Bz)
 
-  %a.poly = bn254.sf[$n] fft(%Az, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false, control-predecessors={%Cz}
-  %b.poly = bn254.sf[$n] fft(%Bz, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false, control-predecessors={%Cz}
+  %a.poly = bn254.sf[$n] fft(%Az, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false
+  %b.poly = bn254.sf[$n] fft(%Bz, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false
   %c.poly = bn254.sf[$n] fft(%Cz, %ifft_twiddles), fft_type=IFFT, fft_length=$n, fft_do_bit_reverse=false
 
   %a.poly_x_twiddles = bn254.sf[$n] multiply(%a.poly, %twiddles)
