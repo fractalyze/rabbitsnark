@@ -44,7 +44,7 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %r = bn254.sf[] parameter(17)
   %s = bn254.sf[] parameter(18)
 
-  %z.in_mont = bn254.sf[$m]{0} convert(%z)
+  %z.in_mont = bn254.sf[$m]{0} bitcast(%z)
 
   %Az = bn254.sf[$n] dot(%A, %z.in_mont)
   %Bz = bn254.sf[$n] dot(%B, %z.in_mont)
@@ -105,8 +105,7 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
 template <typename T>
 absl::Status WriteABMatricesToFile(
     size_t num_rows, size_t num_cols,
-    const std::vector<Coefficient<T>>& coefficients,
-    std::string_view output_dir,
+    absl::Span<const Coefficient<T>> coefficients, std::string_view output_dir,
     std::map<std::string, std::string>& replacements) {
   math::SparseMatrix<T> a_matrix(num_rows, num_cols);
   math::SparseMatrix<T> b_matrix(num_rows, num_cols);

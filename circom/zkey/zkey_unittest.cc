@@ -43,7 +43,7 @@ Coefficient<F> ToCoefficient(const CoefficientData& data) {
       data.matrix,
       data.constraint,
       data.signal,
-      *F::FromDecString(data.coefficient),
+      F(F::FromDecString(data.coefficient)->value()),
   };
 }
 
@@ -51,8 +51,7 @@ Coefficient<F> ToCoefficient(const CoefficientData& data) {
 
 TEST(ZKeyTest, Parse) {
   TF_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ZKey<Curve>> zkey,
-                          ParseZKey<Curve>("circom/zkey/multiplier_3.zkey",
-                                           /*process_coefficients=*/true));
+                          ParseZKey<Curve>("circom/zkey/multiplier_3.zkey"));
   ASSERT_TRUE(zkey);
   ASSERT_EQ(zkey->GetVersion(), 1);
 
@@ -163,9 +162,10 @@ TEST(ZKeyTest, Parse) {
   };
   // clang-format on
 
-  v1::CoefficientsSection<F> expected_coefficients{base::Map(
+  std::vector<Coefficient<F>> coefficients = base::Map(
       coefficient_datas,
-      [](const CoefficientData& data) { return ToCoefficient(data); })};
+      [](const CoefficientData& data) { return ToCoefficient(data); });
+  v1::CoefficientsSection<F> expected_coefficients{coefficients};
   EXPECT_EQ(v1_zkey->coefficients, expected_coefficients);
 
   // clang-format off
