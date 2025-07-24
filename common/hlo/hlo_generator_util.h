@@ -77,9 +77,8 @@ absl::Status WriteCSRSparseMatrixToFile(
 }
 
 template <typename T>
-absl::Status WriteFFTTwiddlesToFile(
-    size_t domain_size, std::string_view output_dir,
-    std::map<std::string, std::string>& replacements) {
+absl::Status WriteFFTTwiddlesToFile(size_t domain_size,
+                                    std::string_view output_dir) {
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
 
   std::vector<T> fft_twiddles(domain_size);
@@ -94,9 +93,8 @@ absl::Status WriteFFTTwiddlesToFile(
 }
 
 template <typename T>
-absl::Status WriteIFFTTwiddlesToFile(
-    size_t domain_size, std::string_view output_dir,
-    std::map<std::string, std::string>& replacements) {
+absl::Status WriteIFFTTwiddlesToFile(size_t domain_size,
+                                     std::string_view output_dir) {
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
 
   T x = 1;
