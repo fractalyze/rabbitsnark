@@ -1,0 +1,27 @@
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+zkx_cc_library(
+    name = "proof_writer",
+    hdrs = ["proof_writer.h"],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@zkx//zkx:literal",
+    ],
+)
+
+zkx_cc_library(
+    name = "public_writer",
+    hdrs = ["public_writer.h"],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/types:span",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:endian",
+        "@zkx//zkx/base/buffer:serde",
+        "@zkx//zkx/base/buffer:vector_buffer",
+    ],
+)

@@ -20,6 +20,7 @@ namespace zkx {
 
 struct Options {
   std::string proving_key_path;
+  std::string r1cs_path;
   std::string witness_path;
   std::string proof_path;
   std::string public_path;

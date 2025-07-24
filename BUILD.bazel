@@ -12,6 +12,7 @@ zkx_cc_library(
     hdrs = ["command_runner.h"],
     deps = [
         "//circom:command_runner_impl",
+        "//gnark:command_runner_impl",
         "@com_google_absl//absl/log:globals",
         "@com_google_absl//absl/strings",
         "@zkx//xla/tsl/platform:errors",

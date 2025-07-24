@@ -120,9 +120,8 @@ absl::Status WriteABMatricesToFile(
 }
 
 template <typename T>
-absl::Status WriteTwiddlesToFile(
-    size_t domain_size, std::string_view output_dir,
-    std::map<std::string, std::string>& replacements) {
+absl::Status WriteTwiddlesToFile(size_t domain_size,
+                                 std::string_view output_dir) {
   TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(2 * domain_size));
 
   std::vector<T> twiddles(domain_size);
@@ -202,12 +201,9 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
 
   TF_RETURN_IF_ERROR(WriteABMatricesToFile(n, m, coefficients.coefficients,
                                            output_dir, replacements));
-  TF_RETURN_IF_ERROR(
-      WriteTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
-  TF_RETURN_IF_ERROR(
-      WriteFFTTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
-  TF_RETURN_IF_ERROR(
-      WriteIFFTTwiddlesToFile<F>(header.domain_size, output_dir, replacements));
+  TF_RETURN_IF_ERROR(WriteTwiddlesToFile<F>(n, output_dir));
+  TF_RETURN_IF_ERROR(WriteFFTTwiddlesToFile<F>(n, output_dir));
+  TF_RETURN_IF_ERROR(WriteIFFTTwiddlesToFile<F>(n, output_dir));
 
   std::string hlo_string = absl::StrReplaceAll(kHloText, replacements);
 

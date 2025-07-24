@@ -1,6 +1,62 @@
-load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@rules_cc//cc:defs.bzl", "cc_import")
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_binary", "zkx_cc_library", "zkx_openmp_defines")
+load(":build_defs.bzl", "if_has_sp1")
 
 package(default_visibility = ["//visibility:public"])
+
+bool_flag(
+    name = "has_sp1",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "zkx_has_sp1",
+    flag_values = {":has_sp1": "true"},
+)
+
+cc_import(
+    name = "babybear_cc",
+    hdrs = ["babybear.h"],
+    static_library = if_has_sp1("libbabybear.a", ":dummy"),
+)
+
+zkx_cc_library(
+    name = "command_runner_impl",
+    hdrs = ["command_runner_impl.h"],
+    defines = if_has_sp1(
+        ["ZKX_HAS_SP1"],
+        [],
+    ) + zkx_openmp_defines(),
+    deps = [
+        "//common:command_runner_interface",
+        "//common:profiler",
+        "//gnark/bin:proof_writer",
+        "//gnark/bin:public_writer",
+        "//gnark/hlo:hlo_generator",
+        "//gnark/pk:proving_key",
+        "//gnark/witness",
+        "@com_google_absl//absl/strings",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//xla/tsl/platform:path",
+        "@zkx//xla/tsl/platform:statusor",
+    ] + if_has_sp1(
+        [
+            ":babybear_cc",
+            ":sp1_cc",
+        ],
+        [
+            "@gnark_go//:gnark_cc",
+        ],
+    ),
+)
+
+zkx_cc_binary(
+    name = "dummy",
+    srcs = ["dummy.cc"],
+    linkstatic = True,
+)
 
 zkx_cc_library(
     name = "reader_utils",
@@ -19,4 +75,10 @@ zkx_cc_library(
     srcs = ["serde_mode.cc"],
     hdrs = ["serde_mode.h"],
     deps = ["@zkx//zkx/math/elliptic_curves/short_weierstrass:affine_point"],
+)
+
+cc_import(
+    name = "sp1_cc",
+    hdrs = ["libsp1.h"],
+    static_library = if_has_sp1("libsp1.a", ":dummy"),
 )
