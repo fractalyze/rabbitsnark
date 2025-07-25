@@ -12,6 +12,9 @@
 #include "zkx/base/flag/flag_value_traits.h"
 #include "zkx/base/flag/numeric_flags.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
+// clang-format off
+#include "version_generated.h"
+// clang-format on
 
 namespace zkx {
 
@@ -42,11 +45,15 @@ void AddCompileCommand(base::SubParser& parser, Options& options) {
   base::SubParser& compile_parser =
       parser.AddSubParser().set_name("compile").set_help(
           "Compile the Groth16 prover");
+  std::string proving_key_help = "Path to the Groth16 proving key ";
+  if (parser.name() == "circom") {
+    proving_key_help += "(`.zkey`)";
+  } else if (parser.name() == "gnark") {
+    proving_key_help += "(`.bin`)";
+  }
   compile_parser.AddFlag<base::StringFlag>(&options.proving_key_path)
       .set_name("proving_key")
-      .set_help(
-          "Path to the Groth16 proving key (`.zkey` for circom, `.bin` for "
-          "gnark)");
+      .set_help(proving_key_help);
   compile_parser.AddFlag<base::StringFlag>(&options.output_dir)
       .set_name("output")
       .set_help("Directory to store compiled prover output");
@@ -85,25 +92,37 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
   base::SubParser& prove_parser =
       parser.AddSubParser().set_name("prove").set_help(
           "Generate a proof using compiled Groth16 prover");
-  if (parser.name() == "gnark") {
+  std::string witness_help = "Path to the witness ";
+  std::string proof_help = "Output path for proof ";
+  std::string public_help = "Output path for public inputs ";
+  if (parser.name() == "circom") {
+    witness_help += "(`.wtns`)";
+    proof_help += "(`.json`)";
+    public_help += "(`.json`)";
+  } else if (parser.name() == "gnark") {
+#if defined(ZKX_HAS_SP1)
+    witness_help += "(`.json`)";
+#else
+    witness_help += "(`.bin`)";
+#endif
+    proof_help += "(`.bin`)";
+    public_help += "(`.bin`)";
     prove_parser.AddFlag<base::StringFlag>(&options.proving_key_path)
         .set_name("proving_key")
         .set_help("Path to the Groth16 proving key (`.bin`)");
     prove_parser.AddFlag<base::StringFlag>(&options.r1cs_path)
         .set_name("r1cs")
-        .set_help("Path to the R1CS (`.r1cs`)");
+        .set_help("Path to the R1CS (`.bin`)");
   }
   prove_parser.AddFlag<base::StringFlag>(&options.witness_path)
       .set_name("witness")
-      .set_help("Path to the witness (`.wtns` for circom)");
+      .set_help(witness_help);
   prove_parser.AddFlag<base::StringFlag>(&options.proof_path)
       .set_name("proof")
-      .set_help("Output path for proof (`.json` for circom, `.bin` for gnark)");
+      .set_help(proof_help);
   prove_parser.AddFlag<base::StringFlag>(&options.public_path)
       .set_name("public")
-      .set_help(
-          "Output path for public inputs (`.json` for circom, `.bin` for "
-          "gnark)");
+      .set_help(public_help);
   prove_parser.AddFlag<base::StringFlag>(&options.output_dir)
       .set_name("output")
       .set_help("Directory containing compiled prover files");
@@ -111,14 +130,15 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
       .set_long_name("--no_zk")
       .set_default_value(false)
       .set_help(
-          "Disable zero-knowledge (for debugging or comparison with "
-          "RapidSnark). Disabled by default.");
+          "Disable zero-knowledge (for debugging or comparison). Disabled by "
+          "default.");
 }
 
 }  // namespace
 
 absl::Status CommandRunner::Run(int argc, char** argv) {
   Options options;
+  bool full_version;
   Curve curve;
   int vlog_level;
 
@@ -134,6 +154,13 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   AddCompileCommand(circom_parser, options);
   AddProveCommand(circom_parser, options);
 
+  base::SubParser& version_parser =
+      parser.AddSubParser().set_name("version").set_help("Print version");
+  version_parser.AddFlag<base::BoolFlag>(&full_version)
+      .set_long_name("--full")
+      .set_default_value(false)
+      .set_help("Print full version");
+
   parser.AddFlag<base::Flag<Curve>>(&curve)
       .set_long_name("--curve")
       .set_default_value(Curve::kBn254)
@@ -145,6 +172,14 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
       .set_help("Logging verbosity level (default: 0)");
 
   TF_RETURN_IF_ERROR(parser.Parse(argc, argv));
+
+  if (version_parser.is_set()) {
+    std::cout << "RabbitSnark version: "
+              << (full_version ? RABBIT_SNARK_VERSION_FULL_STR
+                               : RABBIT_SNARK_VERSION_STR)
+              << std::endl;
+    return absl::OkStatus();
+  }
 
   if (vlog_level > 0) {
     std::cout << "Setting vlog level to " << vlog_level << std::endl;
