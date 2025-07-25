@@ -1,6 +1,6 @@
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@rules_cc//cc:defs.bzl", "cc_import")
-load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_binary", "zkx_cc_library", "zkx_openmp_defines")
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_openmp_defines")
 load(":build_defs.bzl", "if_has_sp1")
 
 package(default_visibility = ["//visibility:public"])
@@ -18,7 +18,7 @@ config_setting(
 cc_import(
     name = "babybear_cc",
     hdrs = ["babybear.h"],
-    static_library = if_has_sp1("libbabybear.a", ":dummy"),
+    static_library = if_has_sp1("libbabybear.a", None),
 )
 
 zkx_cc_library(
@@ -52,12 +52,6 @@ zkx_cc_library(
     ),
 )
 
-zkx_cc_binary(
-    name = "dummy",
-    srcs = ["dummy.cc"],
-    linkstatic = True,
-)
-
 zkx_cc_library(
     name = "reader_utils",
     srcs = ["reader_utils.cc"],
@@ -80,5 +74,5 @@ zkx_cc_library(
 cc_import(
     name = "sp1_cc",
     hdrs = ["libsp1.h"],
-    static_library = if_has_sp1("libsp1.a", ":dummy"),
+    static_library = if_has_sp1("libsp1.a", None),
 )
