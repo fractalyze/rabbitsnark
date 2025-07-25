@@ -1,14 +1,35 @@
 load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
+load("@version//:build_defs.bzl", "lastchange", "version_header")
 load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_binary", "zkx_cc_library")
+load("//:semver.bzl", "VERSION_MAJOR", "VERSION_MINOR", "VERSION_PATCH", "VERSION_PRERELEASE")
 
 refresh_compile_commands(
     name = "refresh_compile_commands",
     targets = ["//:all"],
 )
 
+lastchange(
+    name = "lastchange",
+    git_root = "//:WORKSPACE.bazel",
+)
+
+version_header(
+    name = "version_generated",
+    lastchange = ":lastchange",
+    major = VERSION_MAJOR,
+    minor = VERSION_MINOR,
+    output = "version_generated.h",
+    patch = VERSION_PATCH,
+    prerelease = VERSION_PRERELEASE,
+    project = "RABBIT_SNARK",
+)
+
 zkx_cc_library(
     name = "command_runner",
-    srcs = ["command_runner.cc"],
+    srcs = [
+        "command_runner.cc",
+        ":version_generated",
+    ],
     hdrs = ["command_runner.h"],
     deps = [
         "//circom:command_runner_impl",

@@ -12,6 +12,9 @@
 #include "zkx/base/flag/flag_value_traits.h"
 #include "zkx/base/flag/numeric_flags.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
+// clang-format off
+#include "version_generated.h"
+// clang-format on
 
 namespace zkx {
 
@@ -119,6 +122,7 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
 
 absl::Status CommandRunner::Run(int argc, char** argv) {
   Options options;
+  bool full_version;
   Curve curve;
   int vlog_level;
 
@@ -134,6 +138,13 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   AddCompileCommand(circom_parser, options);
   AddProveCommand(circom_parser, options);
 
+  base::SubParser& version_parser =
+      parser.AddSubParser().set_name("version").set_help("Print version");
+  version_parser.AddFlag<base::BoolFlag>(&full_version)
+      .set_long_name("--full")
+      .set_default_value(false)
+      .set_help("Print full version");
+
   parser.AddFlag<base::Flag<Curve>>(&curve)
       .set_long_name("--curve")
       .set_default_value(Curve::kBn254)
@@ -145,6 +156,14 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
       .set_help("Logging verbosity level (default: 0)");
 
   TF_RETURN_IF_ERROR(parser.Parse(argc, argv));
+
+  if (version_parser.is_set()) {
+    std::cout << "RabbitSnark version: "
+              << (full_version ? RABBIT_SNARK_VERSION_FULL_STR
+                               : RABBIT_SNARK_VERSION_STR)
+              << std::endl;
+    return absl::OkStatus();
+  }
 
   if (vlog_level > 0) {
     std::cout << "Setting vlog level to " << vlog_level << std::endl;
