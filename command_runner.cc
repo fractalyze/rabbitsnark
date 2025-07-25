@@ -130,8 +130,8 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
       .set_long_name("--no_zk")
       .set_default_value(false)
       .set_help(
-          "Disable zero-knowledge (for debugging or comparison with "
-          "RapidSnark). Disabled by default.");
+          "Disable zero-knowledge (for debugging or comparison). Disabled by "
+          "default.");
 }
 
 }  // namespace
