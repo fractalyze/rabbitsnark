@@ -41,7 +41,6 @@ zkx_cc_library(
         "@com_google_absl//absl/types:span",
         "@zkx//xla/tsl/platform:env",
         "@zkx//zkx/base:auto_reset",
-        "@zkx//zkx/base:openmp_util",
         "@zkx//zkx/base/buffer:read_only_buffer",
         "@zkx//zkx/base/buffer:serde",
     ],

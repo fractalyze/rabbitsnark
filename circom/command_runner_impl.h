@@ -27,9 +27,7 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     std::unique_ptr<ZKey<Curve>> zkey;
     RUN_WITH_PROFILE(
         "parsing zkey",
-        TF_ASSIGN_OR_RETURN(zkey,
-                            ParseZKey<Curve>(options.proving_key_path,
-                                             /*process_coefficients=*/true)));
+        TF_ASSIGN_OR_RETURN(zkey, ParseZKey<Curve>(options.proving_key_path)));
     const v1::ZKey<Curve>* v1_zkey = zkey->ToV1();
     const v1::ZKeyHeaderGrothSection<Curve>& header = v1_zkey->header_groth;
 

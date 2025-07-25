@@ -16,7 +16,6 @@
 #include "xla/tsl/platform/env.h"
 #include "zkx/base/auto_reset.h"
 #include "zkx/base/buffer/read_only_buffer.h"
-#include "zkx/base/openmp_util.h"
 
 namespace zkx::circom {
 namespace v1 {
@@ -39,8 +38,7 @@ struct ZKey {
   virtual v1::ZKey<Curve>* ToV1() { return nullptr; }
   virtual const v1::ZKey<Curve>* ToV1() const { return nullptr; }
 
-  virtual absl::Status Read(const base::ReadOnlyBuffer& buffer,
-                            bool process_coefficients) = 0;
+  virtual absl::Status Read(const base::ReadOnlyBuffer& buffer) = 0;
 
   virtual ProvingKey<Curve> GetProvingKey() const = 0;
   virtual absl::Span<const Coefficient<F>> GetCoefficients() const = 0;
@@ -55,7 +53,7 @@ constexpr char kZKeyMagic[4] = {'z', 'k', 'e', 'y'};
 
 template <typename Curve>
 absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(
-    const std::string& path, bool process_coefficients) {
+    const std::string& path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;
   TF_RETURN_IF_ERROR(
       tsl::Env::Default()->NewReadOnlyMemoryRegionFromFile(path, &region));
@@ -76,7 +74,7 @@ absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(
   std::unique_ptr<ZKey<Curve>> zkey;
   if (version == 1) {
     zkey.reset(new v1::ZKey<Curve>(std::move(region)));
-    TF_RETURN_IF_ERROR(zkey->ToV1()->Read(buffer, process_coefficients));
+    TF_RETURN_IF_ERROR(zkey->ToV1()->Read(buffer));
   } else {
     return absl::InvalidArgumentError(
         absl::Substitute("version is invalid. 1 vs $0", version));
@@ -184,7 +182,7 @@ using PointsH1Section = CommitmentsSection<C>;
 
 template <typename F>
 struct CoefficientsSection {
-  std::vector<Coefficient<F>> coefficients;
+  absl::Span<const Coefficient<F>> coefficients;
 
   bool operator==(const CoefficientsSection& other) const {
     return coefficients == other.coefficients;
@@ -193,22 +191,12 @@ struct CoefficientsSection {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer,
-                    bool process_coefficients) {
+  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
     uint32_t num_coefficients;
     TF_RETURN_IF_ERROR(buffer.Read(&num_coefficients));
     Coefficient<F>* ptr;
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&ptr, num_coefficients));
-
-    if (process_coefficients) {
-      coefficients.resize(num_coefficients);
-      OMP_PARALLEL_FOR(size_t i = 0; i < coefficients.size(); ++i) {
-        coefficients[i].matrix = ptr[i].matrix;
-        coefficients[i].constraint = ptr[i].constraint;
-        coefficients[i].signal = ptr[i].signal;
-        coefficients[i].value = F::FromUnchecked(ptr[i].value.MontReduce());
-      }
-    }
+    coefficients = {ptr, num_coefficients};
     return absl::OkStatus();
   }
 };
@@ -237,8 +225,7 @@ struct ZKey : public circom::ZKey<Curve> {
   ZKey<Curve>* ToV1() override { return this; }
   const v1::ZKey<Curve>* ToV1() const override { return this; }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer,
-                    bool process_coefficients) override {
+  absl::Status Read(const base::ReadOnlyBuffer& buffer) override {
     using BaseField = typename G1AffinePoint::BaseField;
 
     base::AutoReset<bool> auto_reset(&base::Serde<F>::s_is_in_montgomery, true);
@@ -261,7 +248,7 @@ struct ZKey : public circom::ZKey<Curve> {
     TF_RETURN_IF_ERROR(ic.Read(buffer, num_public_inputs + 1));
 
     TF_RETURN_IF_ERROR(sections.MoveTo(ZKeySectionType::kCoefficients));
-    TF_RETURN_IF_ERROR(coefficients.Read(buffer, process_coefficients));
+    TF_RETURN_IF_ERROR(coefficients.Read(buffer));
 
     TF_RETURN_IF_ERROR(sections.MoveTo(ZKeySectionType::kPointsA1));
     TF_RETURN_IF_ERROR(points_a1.Read(buffer, num_vars));
