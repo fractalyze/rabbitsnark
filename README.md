@@ -1,6 +1,6 @@
 # RabbitSNARK
 
-This is a command-line tool for generating zero-knowledge proofs using the Groth16 proving system. It is built with the [ZKIR](https://github.com/zk-rabbit/zkir) and utilizes [ZKX](zkx). The tool is designed to handle [circom](https://docs.circom.io/getting-started/installation/)-style circuits and supports both standard and non-zero-knowledge (non-ZK) proof generation modes.
+This is a command-line tool for generating zero-knowledge proofs using the Groth16 proving system. It is built with the [ZKIR](https://github.com/zk-rabbit/zkir) and utilizes [ZKX](zkx). The tool is designed to handle [circom](https://docs.circom.io/getting-started/installation/) and [gnark](https://github.com/Consensys/gnark) circuits and supports both standard and non-zero-knowledge (non-ZK) proof generation modes.
 
 ## How to build
 
