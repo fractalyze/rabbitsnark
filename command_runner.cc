@@ -94,7 +94,7 @@ void AddProveCommand(base::SubParser& parser, Options& options) {
         .set_help("Path to the Groth16 proving key (`.bin`)");
     prove_parser.AddFlag<base::StringFlag>(&options.r1cs_path)
         .set_name("r1cs")
-        .set_help("Path to the R1CS (`.r1cs`)");
+        .set_help("Path to the R1CS (`.bin`)");
   }
   prove_parser.AddFlag<base::StringFlag>(&options.witness_path)
       .set_name("witness")
