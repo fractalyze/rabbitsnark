@@ -140,13 +140,13 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[])  
 )";
 
 template <typename T>
-absl::Status WriteCosetTwiddlesToFile(T multiplicativeGen, size_t domain_size,
+absl::Status WriteCosetTwiddlesToFile(T multiplicative_gen, size_t domain_size,
                                       std::string_view output_dir) {
   std::vector<T> coset_twiddles(domain_size);
   T x = 1;
   for (int64_t i = 0; i < domain_size; ++i) {
     coset_twiddles[i] = x;
-    x *= multiplicativeGen;
+    x *= multiplicative_gen;
   }
 
   math::BitReverseShuffleInPlace(coset_twiddles);
@@ -156,14 +156,14 @@ absl::Status WriteCosetTwiddlesToFile(T multiplicativeGen, size_t domain_size,
 }
 
 template <typename T>
-absl::Status WriteCosetInvTwiddlesToFile(T multiplicativeGenInv,
+absl::Status WriteCosetInvTwiddlesToFile(T multiplicative_gen_inv,
                                          size_t domain_size,
                                          std::string_view output_dir) {
   std::vector<T> coset_inv_twiddles(domain_size);
   T x = 1;
   for (int64_t i = 0; i < domain_size; ++i) {
     coset_inv_twiddles[i] = x;
-    x *= multiplicativeGenInv;
+    x *= multiplicative_gen_inv;
   }
 
   math::BitReverseShuffleInPlace(coset_inv_twiddles);
@@ -173,9 +173,9 @@ absl::Status WriteCosetInvTwiddlesToFile(T multiplicativeGenInv,
 }
 
 template <typename T>
-absl::Status WriteDenToFile(T multiplicativeGen, T cardinality,
+absl::Status WriteDenToFile(T multiplicative_gen, T cardinality,
                             size_t domain_size, std::string_view output_dir) {
-  T den = (multiplicativeGen.Pow(cardinality) - T::One()).Inverse().value();
+  T den = (multiplicative_gen.Pow(cardinality) - T::One()).Inverse().value();
   std::vector<T> den_vec(domain_size);
   for (int64_t i = 0; i < domain_size; ++i) {
     den_vec[i] = den;
