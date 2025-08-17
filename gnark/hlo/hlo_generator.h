@@ -235,9 +235,7 @@ absl::StatusOr<std::string> GenerateHLO(const ProvingKey<Curve>& proving_key,
   additional_data.beta_g1 = proving_key.beta_g1;
   additional_data.delta_g1 = proving_key.delta_g1;
 
-  // TODO(chokobole): Use `output_dir` instead of `std::string(output_dir)`
-  // after `CreateDir()` can accept `std::string_view`.
-  absl::Status s = tsl::Env::Default()->CreateDir(std::string(output_dir));
+  absl::Status s = tsl::Env::Default()->CreateDir(output_dir);
   if (!(s.ok() || absl::IsAlreadyExists(s))) {
     return s;
   }
