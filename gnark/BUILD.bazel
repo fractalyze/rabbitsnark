@@ -68,7 +68,10 @@ zkx_cc_library(
     name = "serde_mode",
     srcs = ["serde_mode.cc"],
     hdrs = ["serde_mode.h"],
-    deps = ["@zkx//zkx/math/elliptic_curves/short_weierstrass:affine_point"],
+    deps = [
+        "@com_google_absl//absl/base:core_headers",
+        "@zkx//zkx/math/elliptic_curves/short_weierstrass:affine_point",
+    ],
 )
 
 cc_import(
