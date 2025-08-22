@@ -1,5 +1,7 @@
 #include "gnark/reader_utils.h"
 
+#include <vector>
+
 namespace zkx::gnark {
 
 // See

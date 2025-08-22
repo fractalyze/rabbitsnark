@@ -1,6 +1,7 @@
 #ifndef GNARK_HLO_HLO_GENERATOR_H_
 #define GNARK_HLO_HLO_GENERATOR_H_
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "zkx/math/poly/bit_reverse.h"
 
 namespace zkx::gnark {
-namespace {
 
 template <typename Curve>
 struct GnarkProvingKeyAdditionalData : public ProvingKeyAdditionalData<Curve> {
@@ -183,8 +183,6 @@ absl::Status WriteDenToFile(T multiplicative_gen, T cardinality,
 
   return WriteSpanToFile(absl::MakeConstSpan(den_vec), output_dir, "den");
 }
-
-}  // namespace
 
 template <typename Curve>
 absl::StatusOr<std::string> GenerateHLO(const ProvingKey<Curve>& proving_key,

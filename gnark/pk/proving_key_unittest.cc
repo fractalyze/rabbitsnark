@@ -1,5 +1,8 @@
 #include "gnark/pk/proving_key.h"
 
+#include <string>
+#include <vector>
+
 #include "gtest/gtest.h"
 
 #include "xla/tsl/platform/statusor.h"

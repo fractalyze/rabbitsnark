@@ -1,6 +1,7 @@
 #ifndef CIRCOM_HLO_HLO_GENERATOR_H_
 #define CIRCOM_HLO_HLO_GENERATOR_H_
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "zkx/math/poly/bit_reverse.h"
 
 namespace zkx::circom {
-namespace {
 
 const std::string_view kHloText = R"(
 ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
@@ -134,8 +134,6 @@ absl::Status WriteTwiddlesToFile(size_t domain_size,
 
   return WriteSpanToFile(absl::MakeConstSpan(twiddles), output_dir, "twiddles");
 }
-
-}  // namespace
 
 template <typename Curve>
 absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,

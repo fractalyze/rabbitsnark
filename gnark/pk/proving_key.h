@@ -1,7 +1,11 @@
-#ifndef GNARK_ZKEY_PROVING_KEY_H_
-#define GNARK_ZKEY_PROVING_KEY_H_
+#ifndef GNARK_PK_PROVING_KEY_H_
+#define GNARK_PK_PROVING_KEY_H_
 
 #include <sys/mman.h>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "gnark/reader_utils.h"
 #include "gnark/serde_mode.h"
@@ -207,4 +211,4 @@ absl::StatusOr<std::unique_ptr<ProvingKey<Curve>>> ParseProvingKey(
 
 }  // namespace zkx::gnark
 
-#endif  // GNARK_ZKEY_PROVING_KEY_H_
+#endif  // GNARK_PK_PROVING_KEY_H_

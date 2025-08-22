@@ -1,5 +1,10 @@
 #include "common/command_runner_interface.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "xla/tsl/platform/path.h"
 #include "zkx/service/platform_util.h"
 

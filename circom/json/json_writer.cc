@@ -1,5 +1,7 @@
 #include "circom/json/json_writer.h"
 
+#include <string>
+
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
