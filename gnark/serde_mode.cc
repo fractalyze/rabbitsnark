@@ -1,6 +1,6 @@
 #include "gnark/serde_mode.h"
 
-#include "absl/log/check.h"
+#include "absl/base/optimization.h"
 
 namespace zkx::gnark {
 
