@@ -61,18 +61,6 @@ The following are project-specific deviations and clarifications from the
 
 ### Header Inclusion
 
-- **Avoid redundant includes**: Do not repeat headers in `.cc` files that are
-  already included in the corresponding `.h`.
-
-  ```c++
-  // in a.h
-  #include <stdint.h>
-
-  // in a.cc
-  #include "a.h"
-  // #include <stdint.h>  // ❌ redundant
-  ```
-
 - **Include only required headers**. Remove unused includes.
 
 ### Raw Pointer Ownership
