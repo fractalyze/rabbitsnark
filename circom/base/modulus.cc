@@ -1,5 +1,7 @@
 #include "circom/base/modulus.h"
 
+#include <string>
+
 #include "absl/base/optimization.h"
 
 namespace zkx::circom {

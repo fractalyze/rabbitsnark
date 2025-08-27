@@ -2,6 +2,7 @@
 #define CIRCOM_BASE_MODULUS_H_
 
 #include <array>
+#include <string>
 #include <vector>
 
 #include "absl/log/check.h"

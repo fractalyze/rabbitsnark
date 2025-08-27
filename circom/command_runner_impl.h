@@ -1,8 +1,11 @@
-#ifndef CIRCOM_COMMAND_RUNNER_H_
-#define CIRCOM_COMMAND_RUNNER_H_
+#ifndef CIRCOM_COMMAND_RUNNER_IMPL_H_
+#define CIRCOM_COMMAND_RUNNER_IMPL_H_
 
 #include <iostream>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "absl/strings/substitute.h"
 #include "common/command_runner_interface.h"
@@ -222,4 +225,4 @@ class CommandRunnerImpl : public CommandRunnerInterface {
 
 }  // namespace zkx::circom
 
-#endif  // CIRCOM_COMMAND_RUNNER_H_
+#endif  // CIRCOM_COMMAND_RUNNER_IMPL_H_

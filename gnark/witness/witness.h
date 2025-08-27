@@ -3,6 +3,10 @@
 
 #include <sys/mman.h>
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "gnark/reader_utils.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/errors.h"

@@ -1,6 +1,7 @@
 # SP1 Go
 
-This is based on [zk-rabbit/sp1#feat/export-make-witness](https://github.com/zk-rabbit/sp1/tree/feat/export-make-witness).
+This is based on
+[zk-rabbit/sp1#feat/export-make-witness](https://github.com/zk-rabbit/sp1/tree/feat/export-make-witness).
 
 ## How to Build `libsp1.a`
 
@@ -8,7 +9,8 @@ This is based on [zk-rabbit/sp1#feat/export-make-witness](https://github.com/zk-
 bazel build //:libsp1
 ```
 
-This will produce `bazel-bin/libsp1_/libsp1.a`, which is required for SP1 Groth16 proof generation.
+This will produce `bazel-bin/libsp1_/libsp1.a`, which is required for SP1
+Groth16 proof generation.
 
 ## How to Generate [libsp1.h](/sp1_go/libsp1.h) and [babybear.h](/sp1_go/babybear.h)
 
@@ -28,7 +30,8 @@ sp1/babybear/babybear.go:4:10: fatal error: 'babybear.h' file not found
 1 error generated.
 ```
 
-To fix this, temporarily modify [sp1/babybear/babybear.go](/sp1_go/sp1/babybear/babybear.go) as follows:
+To fix this, temporarily modify
+[sp1/babybear/babybear.go](/sp1_go/sp1/babybear/babybear.go) as follows:
 
 ```diff
 package babybear
@@ -40,11 +43,13 @@ package babybear
 import "C"
 ```
 
-This change adjusts the relative path so that go build can locate [babybear.h](/sp1_go/babybear.h).
+This change adjusts the relative path so that go build can locate
+[babybear.h](/sp1_go/babybear.h).
 
 ## How to Generate `libbabybear.a`
 
-For instructions on how to obtain `libbabybear.a`, please refer to [SP1 Rust](/sp1_rust/README.md).
+For instructions on how to obtain `libbabybear.a`, please refer to
+[SP1 Rust](/sp1_rust/README.md).
 
 ## How to Use
 

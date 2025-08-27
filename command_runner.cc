@@ -1,6 +1,8 @@
-#include "command_runner.h"
+#include "command_runner.h"  // NOLINT(build/include_subdir)
 
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "absl/log/globals.h"
 #include "absl/strings/substitute.h"
@@ -13,7 +15,7 @@
 #include "zkx/base/flag/numeric_flags.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
 // clang-format off
-#include "version_generated.h"
+#include "version_generated.h"  // NOLINT(build/include_subdir)
 // clang-format on
 
 namespace zkx {

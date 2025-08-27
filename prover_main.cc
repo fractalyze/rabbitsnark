@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "command_runner.h"
+#include "command_runner.h"  // NOLINT(build/include_subdir)
 
 int main(int argc, char** argv) {
   zkx::CommandRunner runner;

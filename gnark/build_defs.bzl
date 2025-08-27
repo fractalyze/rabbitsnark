@@ -1,3 +1,5 @@
+"""gnark sp1 conditional definition"""
+
 def if_has_sp1(a, b):
     return select({
         "//gnark:zkx_has_sp1": a,

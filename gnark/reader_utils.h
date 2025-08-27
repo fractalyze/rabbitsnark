@@ -51,10 +51,10 @@ absl::Status ReadSliceWithLength(const base::ReadOnlyBuffer& buffer,
   }
   if (length != 0) {
     result->resize(length);
-    memcpy(
-        result->data(),
-        &reinterpret_cast<const char*>(buffer.buffer())[buffer.buffer_offset()],
-        result->size() * sizeof(T));
+    memcpy(result->data(),
+           &(reinterpret_cast<const char*>(
+               buffer.buffer())[buffer.buffer_offset()]),
+           result->size() * sizeof(T));
     buffer.set_buffer_offset(buffer.buffer_offset() +
                              result->size() * sizeof(T));
   }
