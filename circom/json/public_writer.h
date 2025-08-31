@@ -9,7 +9,7 @@
 
 #include "circom/json/json_writer.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename F>
 absl::Status WritePublicToJson(absl::Span<const F> public_values,
@@ -26,6 +26,6 @@ absl::Status WritePublicToJson(absl::Span<const F> public_values,
   return WriteToJson(doc, path);
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_JSON_PUBLIC_WRITER_H_

@@ -1,6 +1,6 @@
 #include "circom/zkey/zkey.h"
 
-namespace zkx::circom::v1 {
+namespace rabbitsnark::circom::v1 {
 
 std::string_view ZKeySectionTypeToString(ZKeySectionType type) {
   switch (type) {
@@ -27,4 +27,4 @@ std::string_view ZKeySectionTypeToString(ZKeySectionType type) {
   }
 }
 
-}  // namespace zkx::circom::v1
+}  // namespace rabbitsnark::circom::v1

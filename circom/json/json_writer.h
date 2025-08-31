@@ -6,10 +6,10 @@
 #include "absl/status/status.h"
 #include "rapidjson/document.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 absl::Status WriteToJson(rapidjson::Document& doc, const std::string& path);
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_JSON_JSON_WRITER_H_

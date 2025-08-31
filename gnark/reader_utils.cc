@@ -2,7 +2,9 @@
 
 #include <vector>
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
+
+namespace base = zkx::base;
 
 // See
 // https://github.com/Consensys/gnark-crypto/blob/43897fd/utils/unsafe/dump_slice.go#L89-L102
@@ -26,4 +28,4 @@ absl::Status ReadElements(const base::ReadOnlyBuffer& buffer,
   return absl::OkStatus();
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark

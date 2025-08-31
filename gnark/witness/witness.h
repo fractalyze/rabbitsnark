@@ -14,7 +14,7 @@
 #include "zkx/base/buffer/endian_auto_reset.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 template <typename F>
 struct Witness {
@@ -29,7 +29,7 @@ struct Witness {
 
   // See
   // https://github.com/Consensys/gnark/blob/a9f014f/backend/witness/witness.go#L205-L256
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(buffer.ReadMany(&num_publics, &num_secrets));
     TF_RETURN_IF_ERROR(ReadElementsWithLength(buffer, &secrets));
     return absl::OkStatus();
@@ -49,14 +49,14 @@ absl::StatusOr<std::unique_ptr<Witness<F>>> ParseWitness(
   }
 
   std::unique_ptr<Witness<F>> witness(new Witness<F>());
-  base::ReadOnlyBuffer buffer(region->data(), region->length());
-  buffer.set_endian(base::Endian::kBig);
-  base::AutoReset<bool> reset_scalar_field_is_in_montgomery(
-      &base::Serde<F>::s_is_in_montgomery, false);
+  zkx::base::ReadOnlyBuffer buffer(region->data(), region->length());
+  buffer.set_endian(zkx::base::Endian::kBig);
+  zkx::base::AutoReset<bool> reset_scalar_field_is_in_montgomery(
+      &zkx::base::Serde<F>::s_is_in_montgomery, false);
   TF_RETURN_IF_ERROR(witness->Read(buffer));
   return witness;
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark
 
 #endif  // GNARK_WITNESS_WITNESS_H_

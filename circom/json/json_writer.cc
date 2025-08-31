@@ -7,7 +7,7 @@
 
 #include "xla/tsl/platform/env.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 absl::Status WriteToJson(rapidjson::Document& doc, const std::string& path) {
   rapidjson::StringBuffer buffer;
@@ -16,4 +16,4 @@ absl::Status WriteToJson(rapidjson::Document& doc, const std::string& path) {
   return tsl::WriteStringToFile(tsl::Env::Default(), path, buffer.GetString());
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom

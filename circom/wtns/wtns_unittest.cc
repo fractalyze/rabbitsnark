@@ -6,7 +6,9 @@
 
 #include "zkx/math/elliptic_curves/bn/bn254/fr.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
+
+namespace math = zkx::math;
 
 using F = math::bn254::Fr;
 
@@ -31,4 +33,4 @@ TEST(WtnsTest, Parse) {
   EXPECT_EQ(wtns->ToV2()->data, expected_data);
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom

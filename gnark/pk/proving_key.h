@@ -15,7 +15,7 @@
 #include "zkx/base/buffer/endian_auto_reset.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 // See
 // https://github.com/Consensys/gnark-crypto/blob/43897fd/ecc/bn254/fr/fft/domain.go#L22-L53
@@ -40,7 +40,7 @@ struct Domain {
   }
   bool operator!=(const Domain& other) const { return !operator==(other); }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     return buffer.ReadMany(&cardinality, &cardinality_inv, &generator,
                            &generator_inv, &fr_multiplicative_gen,
                            &fr_multiplicative_gen_inv, &with_precompute);
@@ -61,13 +61,13 @@ struct PedersenProvingKey {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(ReadElementsWithLength(buffer, &basis));
     TF_RETURN_IF_ERROR(ReadElementsWithLength(buffer, &basis_exp_sigma));
     return absl::OkStatus();
   }
 
-  absl::Status ReadDump(const base::ReadOnlyBuffer& buffer) {
+  absl::Status ReadDump(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(ReadSliceWithLength(buffer, &basis));
     TF_RETURN_IF_ERROR(ReadSliceWithLength(buffer, &basis_exp_sigma));
     return absl::OkStatus();
@@ -118,7 +118,7 @@ struct ProvingKey {
 
   // See
   // https://github.com/Consensys/gnark/blob/a9f014f/backend/groth16/bn254/marshal.go#L315-L373
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(domain.Read(buffer));
     TF_RETURN_IF_ERROR(buffer.ReadMany(&alpha_g1, &beta_g1, &delta_g1));
     TF_RETURN_IF_ERROR(ReadElementsWithLength(buffer, &a_g1_query));
@@ -145,7 +145,7 @@ struct ProvingKey {
 
   // See
   // https://github.com/Consensys/gnark/blob/a9f014f/backend/groth16/bn254/marshal.go#L447-L539
-  absl::Status ReadDump(const base::ReadOnlyBuffer& buffer) {
+  absl::Status ReadDump(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(ReadUnsafeMarker(buffer));
     TF_RETURN_IF_ERROR(domain.Read(buffer));
     uint64_t num_wires;
@@ -191,16 +191,16 @@ absl::StatusOr<std::unique_ptr<ProvingKey<Curve>>> ParseProvingKey(
   }
 
   std::unique_ptr<ProvingKey<Curve>> proving_key(new ProvingKey<Curve>());
-  base::ReadOnlyBuffer buffer(region->data(), region->length());
-  buffer.set_endian(base::Endian::kBig);
-  base::AutoReset<bool> reset_scalar_field_is_in_montgomery(
-      &base::Serde<ScalarField>::s_is_in_montgomery, false);
-  base::AutoReset<bool> reset_base_field_is_in_montgomery(
-      &base::Serde<BaseField>::s_is_in_montgomery, false);
-  base::AutoReset<math::AffinePointSerdeMode> reset_g1_s_mode(
-      &base::Serde<G1AffinePoint>::s_mode, ToAffinePointSerdeMode(mode));
-  base::AutoReset<math::AffinePointSerdeMode> reset_g2_s_mode(
-      &base::Serde<G2AffinePoint>::s_mode, ToAffinePointSerdeMode(mode));
+  zkx::base::ReadOnlyBuffer buffer(region->data(), region->length());
+  buffer.set_endian(zkx::base::Endian::kBig);
+  zkx::base::AutoReset<bool> reset_scalar_field_is_in_montgomery(
+      &zkx::base::Serde<ScalarField>::s_is_in_montgomery, false);
+  zkx::base::AutoReset<bool> reset_base_field_is_in_montgomery(
+      &zkx::base::Serde<BaseField>::s_is_in_montgomery, false);
+  zkx::base::AutoReset<zkx::math::AffinePointSerdeMode> reset_g1_s_mode(
+      &zkx::base::Serde<G1AffinePoint>::s_mode, ToAffinePointSerdeMode(mode));
+  zkx::base::AutoReset<zkx::math::AffinePointSerdeMode> reset_g2_s_mode(
+      &zkx::base::Serde<G2AffinePoint>::s_mode, ToAffinePointSerdeMode(mode));
   if (mode == SerdeMode::kDump) {
     TF_RETURN_IF_ERROR(proving_key->ReadDump(buffer));
   } else {
@@ -209,6 +209,6 @@ absl::StatusOr<std::unique_ptr<ProvingKey<Curve>>> ParseProvingKey(
   return proving_key;
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark
 
 #endif  // GNARK_PK_PROVING_KEY_H_

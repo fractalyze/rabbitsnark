@@ -8,9 +8,12 @@
 #include "zkx/base/containers/container_util.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 namespace {
+
+namespace base = zkx::base;
+namespace math = zkx::math;
 
 using Curve = math::bn254::Curve;
 using G1AffinePoint = math::bn254::G1AffinePoint;
@@ -364,4 +367,4 @@ TEST(ZKeyTest, Parse) {
   EXPECT_EQ(v1_zkey->points_h1, expected_points_h1_section);
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom

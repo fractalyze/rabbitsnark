@@ -21,7 +21,7 @@
 #include "xla/tsl/platform/path.h"
 #include "xla/tsl/platform/statusor.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename Curve>
 class CommandRunnerImpl : public CommandRunnerInterface {
@@ -45,14 +45,15 @@ class CommandRunnerImpl : public CommandRunnerInterface {
           options.non_h_msm_window_bits, header.num_vars));
     }
 
-    std::unique_ptr<HloModule> module;
+    std::unique_ptr<zkx::HloModule> module;
     if (options.skip_hlo) {
       RUN_WITH_PROFILE("loading hlo", {
         std::string hlo_string;
         TF_RETURN_IF_ERROR(tsl::ReadFileToString(
             tsl::Env::Default(),
             tsl::io::JoinPath(options.output_dir, "groth16.hlo"), &hlo_string));
-        TF_ASSIGN_OR_RETURN(module, ParseAndReturnUnverifiedModule(hlo_string));
+        TF_ASSIGN_OR_RETURN(module,
+                            zkx::ParseAndReturnUnverifiedModule(hlo_string));
       });
     } else {
       RUN_WITH_PROFILE("generating hlo", {
@@ -61,11 +62,12 @@ class CommandRunnerImpl : public CommandRunnerInterface {
             GenerateHLO<Curve>(*zkey.get(), options.h_msm_window_bits,
                                options.non_h_msm_window_bits,
                                options.output_dir));
-        TF_ASSIGN_OR_RETURN(module, ParseAndReturnUnverifiedModule(hlo_string));
+        TF_ASSIGN_OR_RETURN(module,
+                            zkx::ParseAndReturnUnverifiedModule(hlo_string));
       });
     }
 
-    std::unique_ptr<OpaqueExecutable> opaque_executable;
+    std::unique_ptr<zkx::OpaqueExecutable> opaque_executable;
     RUN_WITH_PROFILE("compiling", {
       TF_ASSIGN_OR_RETURN(opaque_executable,
                           runner_.CreateExecutable(std::move(module),
@@ -74,11 +76,11 @@ class CommandRunnerImpl : public CommandRunnerInterface {
 
     RUN_WITH_PROFILE("storing executable", {
       TF_ASSIGN_OR_RETURN(
-          Executable * executable,
+          zkx::Executable * executable,
           runner_.ExecutableFromWrapped(opaque_executable.get()));
 
       TF_ASSIGN_OR_RETURN(
-          std::unique_ptr<AotCompilationResult> exported_aot_result,
+          std::unique_ptr<zkx::AotCompilationResult> exported_aot_result,
           runner_.backend().compiler()->Export(executable));
 
       TF_ASSIGN_OR_RETURN(std::string aot_result_string,
@@ -97,7 +99,7 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
     using F = typename G1AffinePoint::ScalarField;
 
-    std::unique_ptr<OpaqueExecutable> opaque_executable;
+    std::unique_ptr<zkx::OpaqueExecutable> opaque_executable;
     RUN_WITH_PROFILE("loading executable", {
       std::string aot_result_string;
       TF_RETURN_IF_ERROR(tsl::ReadFileToString(
@@ -106,12 +108,12 @@ class CommandRunnerImpl : public CommandRunnerInterface {
           &aot_result_string));
 
       TF_ASSIGN_OR_RETURN(
-          std::unique_ptr<AotCompilationResult> aot_result,
+          std::unique_ptr<zkx::AotCompilationResult> aot_result,
           runner_.backend().compiler()->LoadAotCompilationResult(
               aot_result_string));
 
       TF_ASSIGN_OR_RETURN(
-          std::unique_ptr<Executable> executable,
+          std::unique_ptr<zkx::Executable> executable,
           aot_result->LoadExecutable(runner_.backend().compiler(),
                                      /*executor=*/nullptr));
 
@@ -129,7 +131,7 @@ class CommandRunnerImpl : public CommandRunnerInterface {
     int64_t m = pk_additional_data.m;
     int64_t n = pk_additional_data.n;
 
-    std::vector<ScopedShapedBuffer> buffers;
+    std::vector<zkx::ScopedShapedBuffer> buffers;
     std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>> regions;
     RUN_WITH_PROFILE("sending zkey parameters", {
       TF_RETURN_IF_ERROR(
@@ -145,34 +147,41 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       TF_RETURN_IF_ERROR(
           AddScalarParameter(pk_additional_data.delta_g1, &buffers));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "a_g1_query.bin", ShapeUtil::MakeShape(BN254_G1_AFFINE, {m}),
-          &buffers, &regions));
-      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "b_g1_query.bin", ShapeUtil::MakeShape(BN254_G1_AFFINE, {m}),
-          &buffers, &regions));
-      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "b_g2_query.bin", ShapeUtil::MakeShape(BN254_G2_AFFINE, {m}),
-          &buffers, &regions));
-      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "l_g1_query.bin",
-          ShapeUtil::MakeShape(BN254_G1_AFFINE, {m - l - 1}), &buffers,
+          options, "a_g1_query.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_G1_AFFINE, {m}), &buffers,
           &regions));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "h_g1_query.bin", ShapeUtil::MakeShape(BN254_G1_AFFINE, {n}),
+          options, "b_g1_query.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_G1_AFFINE, {m}), &buffers,
+          &regions));
+      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
+          options, "b_g2_query.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_G2_AFFINE, {m}), &buffers,
+          &regions));
+      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
+          options, "l_g1_query.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_G1_AFFINE, {m - l - 1}),
           &buffers, &regions));
+      TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
+          options, "h_g1_query.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_G1_AFFINE, {n}), &buffers,
+          &regions));
       TF_RETURN_IF_ERROR(AddSparseMatrixParameterFromFile(options, "a.bin",
                                                           &buffers, &regions));
       TF_RETURN_IF_ERROR(AddSparseMatrixParameterFromFile(options, "b.bin",
                                                           &buffers, &regions));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
-          &buffers, &regions));
+          options, "twiddles.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_SCALAR, {n}), &buffers,
+          &regions));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "fft_twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
-          &buffers, &regions));
+          options, "fft_twiddles.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_SCALAR, {n}), &buffers,
+          &regions));
       TF_RETURN_IF_ERROR(AddVectorParameterFromFile(
-          options, "ifft_twiddles.bin", ShapeUtil::MakeShape(BN254_SCALAR, {n}),
-          &buffers, &regions));
+          options, "ifft_twiddles.bin",
+          zkx::ShapeUtil::MakeShape(zkx::BN254_SCALAR, {n}), &buffers,
+          &regions));
     });
 
     std::vector<F> public_values;
@@ -199,10 +208,10 @@ class CommandRunnerImpl : public CommandRunnerInterface {
       });
     }
 
-    Literal proof;
+    zkx::Literal proof;
     RUN_WITH_PROFILE("generating proof", {
       TF_ASSIGN_OR_RETURN(
-          ExecutionOutput output,
+          zkx::ExecutionOutput output,
           runner_.ExecuteWithDeviceBuffers(opaque_executable.get(), buffers,
                                            /*profile=*/nullptr));
 
@@ -223,6 +232,6 @@ class CommandRunnerImpl : public CommandRunnerInterface {
   }
 };
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_COMMAND_RUNNER_IMPL_H_

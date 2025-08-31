@@ -1,6 +1,6 @@
 #include "circom/wtns/wtns.h"
 
-namespace zkx::circom::v2 {
+namespace rabbitsnark::circom::v2 {
 
 std::string_view WtnsSectionTypeToString(WtnsSectionType type) {
   switch (type) {
@@ -11,4 +11,4 @@ std::string_view WtnsSectionTypeToString(WtnsSectionType type) {
   }
 }
 
-}  // namespace zkx::circom::v2
+}  // namespace rabbitsnark::circom::v2

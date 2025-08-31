@@ -17,7 +17,7 @@
 #include "zkx/base/auto_reset.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 namespace v1 {
 
 template <typename Curve>
@@ -38,7 +38,7 @@ struct ZKey {
   virtual v1::ZKey<Curve>* ToV1() { return nullptr; }
   virtual const v1::ZKey<Curve>* ToV1() const { return nullptr; }
 
-  virtual absl::Status Read(const base::ReadOnlyBuffer& buffer) = 0;
+  virtual absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) = 0;
 
   virtual ProvingKey<Curve> GetProvingKey() const = 0;
   virtual absl::Span<const Coefficient<F>> GetCoefficients() const = 0;
@@ -62,8 +62,8 @@ absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(
     return absl::InternalError("failed to call madvice()");
   }
 
-  base::ReadOnlyBuffer buffer(region->data(), region->length());
-  buffer.set_endian(base::Endian::kLittle);
+  zkx::base::ReadOnlyBuffer buffer(region->data(), region->length());
+  buffer.set_endian(zkx::base::Endian::kLittle);
   char magic[4];
   uint32_t version;
   TF_RETURN_IF_ERROR(buffer.ReadMany(magic, &version));
@@ -109,7 +109,7 @@ struct ZKeyHeaderSection {
     return prover_type != other.prover_type;
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(buffer.Read(&prover_type));
     if (prover_type != 1) {
       return absl::UnimplementedError(
@@ -137,7 +137,7 @@ struct ZKeyHeaderGrothSection {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(q.Read(buffer));
     TF_RETURN_IF_ERROR(r.Read(buffer));
     TF_RETURN_IF_ERROR(
@@ -158,7 +158,7 @@ struct CommitmentsSection {
     return commitments != other.commitments;
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer,
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer,
                     uint32_t num_commitments) {
     T* ptr;
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&ptr, num_commitments));
@@ -191,7 +191,7 @@ struct CoefficientsSection {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     uint32_t num_coefficients;
     TF_RETURN_IF_ERROR(buffer.Read(&num_coefficients));
     Coefficient<F>* ptr;
@@ -225,12 +225,13 @@ struct ZKey : public circom::ZKey<Curve> {
   ZKey<Curve>* ToV1() override { return this; }
   const v1::ZKey<Curve>* ToV1() const override { return this; }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) override {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) override {
     using BaseField = typename G1AffinePoint::BaseField;
 
-    base::AutoReset<bool> auto_reset(&base::Serde<F>::s_is_in_montgomery, true);
-    base::AutoReset<bool> auto_reset2(
-        &base::Serde<BaseField>::s_is_in_montgomery, true);
+    zkx::base::AutoReset<bool> auto_reset(
+        &zkx::base::Serde<F>::s_is_in_montgomery, true);
+    zkx::base::AutoReset<bool> auto_reset2(
+        &zkx::base::Serde<BaseField>::s_is_in_montgomery, true);
 
     Sections<ZKeySectionType> sections(buffer, &ZKeySectionTypeToString);
     TF_RETURN_IF_ERROR(sections.Read());
@@ -292,6 +293,6 @@ struct ZKey : public circom::ZKey<Curve> {
 };
 
 }  // namespace v1
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_ZKEY_ZKEY_H_

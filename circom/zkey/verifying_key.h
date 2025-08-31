@@ -4,7 +4,7 @@
 #include "xla/tsl/platform/errors.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename Curve>
 struct VerifyingKey {
@@ -27,7 +27,7 @@ struct VerifyingKey {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&alpha_g1, 1));
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&beta_g1, 1));
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&beta_g2, 1));
@@ -38,6 +38,6 @@ struct VerifyingKey {
   }
 };
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_ZKEY_VERIFYING_KEY_H_

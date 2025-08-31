@@ -17,7 +17,7 @@
 #include "zkx/math/base/sparse_matrix.h"
 #include "zkx/math/poly/root_of_unity.h"
 
-namespace zkx {
+namespace rabbitsnark {
 
 template <typename Curve>
 struct ProvingKeyAdditionalData {
@@ -68,7 +68,7 @@ absl::Status WriteSpanToFile(absl::Span<const T> span,
 
 template <typename T>
 absl::Status WriteCSRSparseMatrixToFile(
-    const math::SparseMatrix<T>& matrix, std::string_view output_dir,
+    const zkx::math::SparseMatrix<T>& matrix, std::string_view output_dir,
     std::string_view name, std::map<std::string, std::string>& replacements) {
   TF_ASSIGN_OR_RETURN(std::vector<uint8_t> buffer,
                       matrix.ToCSRBuffer(/*sort=*/true));
@@ -80,7 +80,7 @@ absl::Status WriteCSRSparseMatrixToFile(
 template <typename T>
 absl::Status WriteFFTTwiddlesToFile(size_t domain_size,
                                     std::string_view output_dir) {
-  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
+  TF_ASSIGN_OR_RETURN(T w, zkx::math::GetRootOfUnity<T>(domain_size));
 
   std::vector<T> fft_twiddles(domain_size);
   T x = 1;
@@ -96,7 +96,7 @@ absl::Status WriteFFTTwiddlesToFile(size_t domain_size,
 template <typename T>
 absl::Status WriteIFFTTwiddlesToFile(size_t domain_size,
                                      std::string_view output_dir) {
-  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(domain_size));
+  TF_ASSIGN_OR_RETURN(T w, zkx::math::GetRootOfUnity<T>(domain_size));
 
   T x = 1;
   std::vector<T> ifft_twiddles(domain_size);
@@ -104,12 +104,12 @@ absl::Status WriteIFFTTwiddlesToFile(size_t domain_size,
     ifft_twiddles[i] = x;
     x *= w;
   }
-  TF_RETURN_IF_ERROR(math::BatchInverse(ifft_twiddles, &ifft_twiddles));
+  TF_RETURN_IF_ERROR(zkx::math::BatchInverse(ifft_twiddles, &ifft_twiddles));
 
   return WriteSpanToFile(absl::MakeConstSpan(ifft_twiddles), output_dir,
                          "ifft_twiddles");
 }
 
-}  // namespace zkx
+}  // namespace rabbitsnark
 
 #endif  // COMMON_HLO_HLO_GENERATOR_UTIL_H_

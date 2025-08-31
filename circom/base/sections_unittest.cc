@@ -5,7 +5,9 @@
 #include "zkx/base/buffer/serde.h"
 #include "zkx/base/buffer/vector_buffer.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
+
+namespace base = zkx::base;
 
 namespace {
 
@@ -68,4 +70,4 @@ TEST(SectionsTest, ReadAndGet) {
   }
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom

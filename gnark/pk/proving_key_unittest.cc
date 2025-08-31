@@ -9,9 +9,12 @@
 #include "zkx/base/containers/container_util.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 namespace {
+
+namespace base = zkx::base;
+namespace math = zkx::math;
 
 using Curve = math::bn254::Curve;
 using G1AffinePoint = math::bn254::G1AffinePoint;
@@ -187,4 +190,4 @@ TEST(ProvingKeyTest, ReadDump) {
   RunTest("gnark/pk/pk.dump.bin", SerdeMode::kDump);
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark

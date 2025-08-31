@@ -16,7 +16,7 @@
 #include "zkx/service/hlo_runner.h"
 #include "zkx/shape_util.h"
 
-namespace zkx {
+namespace rabbitsnark {
 
 struct Options {
   std::string proving_key_path;
@@ -41,27 +41,30 @@ class CommandRunnerInterface {
 
  protected:
   template <typename T>
-  absl::Status AddScalarParameter(const T& value,
-                                  std::vector<ScopedShapedBuffer>* buffers) {
-    BorrowingLiteral literal(
+  absl::Status AddScalarParameter(
+      const T& value, std::vector<zkx::ScopedShapedBuffer>* buffers) {
+    zkx::BorrowingLiteral literal(
         reinterpret_cast<const char*>(&value),
-        ShapeUtil::MakeScalarShape(primitive_util::NativeToPrimitiveType<T>()));
+        zkx::ShapeUtil::MakeScalarShape(
+            zkx::primitive_util::NativeToPrimitiveType<T>()));
     TF_ASSIGN_OR_RETURN(
-        ScopedShapedBuffer shaped_buffer,
+        zkx::ScopedShapedBuffer shaped_buffer,
         runner_.TransferLiteralToDevice(literal, buffers->size()));
     buffers->push_back(std::move(shaped_buffer));
     return absl::OkStatus();
   }
 
   template <typename T>
-  absl::Status AddVectorParameter(const absl::Span<const T> values,
-                                  std::vector<ScopedShapedBuffer>* buffers) {
-    BorrowingLiteral literal(
+  absl::Status AddVectorParameter(
+      const absl::Span<const T> values,
+      std::vector<zkx::ScopedShapedBuffer>* buffers) {
+    zkx::BorrowingLiteral literal(
         reinterpret_cast<const char*>(values.data()),
-        ShapeUtil::MakeShape(primitive_util::NativeToPrimitiveType<T>(),
-                             {static_cast<int64_t>(values.size())}));
+        zkx::ShapeUtil::MakeShape(
+            zkx::primitive_util::NativeToPrimitiveType<T>(),
+            {static_cast<int64_t>(values.size())}));
     TF_ASSIGN_OR_RETURN(
-        ScopedShapedBuffer shaped_buffer,
+        zkx::ScopedShapedBuffer shaped_buffer,
         runner_.TransferLiteralToDevice(literal, buffers->size()));
     buffers->push_back(std::move(shaped_buffer));
     return absl::OkStatus();
@@ -69,17 +72,17 @@ class CommandRunnerInterface {
 
   absl::Status AddSparseMatrixParameterFromFile(
       const Options& options, std::string_view fname,
-      std::vector<ScopedShapedBuffer>* buffers,
+      std::vector<zkx::ScopedShapedBuffer>* buffers,
       std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>>* regions);
 
   absl::Status AddVectorParameterFromFile(
-      const Options& options, std::string_view fname, const Shape& shape,
-      std::vector<ScopedShapedBuffer>* buffers,
+      const Options& options, std::string_view fname, const zkx::Shape& shape,
+      std::vector<zkx::ScopedShapedBuffer>* buffers,
       std::vector<std::unique_ptr<tsl::ReadOnlyMemoryRegion>>* regions);
 
-  HloRunner runner_;
+  zkx::HloRunner runner_;
 };
 
-}  // namespace zkx
+}  // namespace rabbitsnark
 
 #endif  // COMMON_COMMAND_RUNNER_INTERFACE_H_

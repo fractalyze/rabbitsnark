@@ -2,7 +2,9 @@
 
 #include "absl/base/optimization.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
+
+namespace math = zkx::math;
 
 math::AffinePointSerdeMode ToAffinePointSerdeMode(SerdeMode mode) {
   switch (mode) {
@@ -17,4 +19,4 @@ math::AffinePointSerdeMode ToAffinePointSerdeMode(SerdeMode mode) {
   return math::AffinePointSerdeMode::kNone;
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark
