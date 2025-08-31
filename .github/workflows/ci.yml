@@ -25,13 +25,8 @@ jobs:
 
       - name: Run `bazel test`
         run: |
-          bazel test \
-            --remote_cache=http://127.0.0.1:9092 \
-            --action_env=CC=/usr/bin/clang \
-            --action_env=CXX=/usr/bin/clang++ \
-            --features=-header_modules --features=-module_maps \
-            --host_features=-header_modules --host_features=-module_maps \
-            --test_output=errors \
+          bazel --bazelrc=.bazelrc.ci test \
+            --config ci \
             //...
 
   pre-commit-style:
