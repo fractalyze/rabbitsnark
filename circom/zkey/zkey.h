@@ -6,7 +6,7 @@
 
 #include <algorithm>
 #include <memory>
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "circom/base/modulus.h"
@@ -52,8 +52,7 @@ struct ZKey {
 constexpr char kZKeyMagic[4] = {'z', 'k', 'e', 'y'};
 
 template <typename Curve>
-absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(
-    const std::string& path) {
+absl::StatusOr<std::unique_ptr<ZKey<Curve>>> ParseZKey(std::string_view path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;
   TF_RETURN_IF_ERROR(
       tsl::Env::Default()->NewReadOnlyMemoryRegionFromFile(path, &region));

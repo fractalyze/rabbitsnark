@@ -17,7 +17,7 @@ namespace rabbitsnark::gnark {
 
 template <typename F>
 absl::Status WritePublicToBin(absl::Span<const F> public_values,
-                              const std::string& path) {
+                              std::string_view path) {
   zkx::base::Uint8VectorBuffer write_buf;
   size_t size = 0;
   if (public_values.size() > 0) {

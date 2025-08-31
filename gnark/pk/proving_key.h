@@ -4,7 +4,7 @@
 #include <sys/mman.h>
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "gnark/reader_utils.h"
@@ -176,7 +176,7 @@ struct ProvingKey {
 
 template <typename Curve>
 absl::StatusOr<std::unique_ptr<ProvingKey<Curve>>> ParseProvingKey(
-    const std::string& path, SerdeMode mode) {
+    std::string_view path, SerdeMode mode) {
   using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
   using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
   using ScalarField = typename Curve::G1Curve::ScalarField;

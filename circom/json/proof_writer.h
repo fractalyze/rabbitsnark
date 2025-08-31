@@ -1,7 +1,7 @@
 #ifndef CIRCOM_JSON_PROOF_WRITER_H_
 #define CIRCOM_JSON_PROOF_WRITER_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -55,7 +55,7 @@ void AddPoint(rapidjson::Document& doc, std::string_view key,
 }
 
 template <typename Curve>
-absl::Status WriteProofToJson(zkx::Literal& proof, const std::string& path) {
+absl::Status WriteProofToJson(zkx::Literal& proof, std::string_view path) {
   using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
   using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
 

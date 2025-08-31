@@ -7,7 +7,7 @@
 #include <sys/mman.h>
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -53,7 +53,7 @@ struct Wtns {
 constexpr char kWtnsMagic[4] = {'w', 't', 'n', 's'};
 
 template <typename F>
-absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(const std::string& path) {
+absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(std::string_view path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;
   TF_RETURN_IF_ERROR(
       tsl::Env::Default()->NewReadOnlyMemoryRegionFromFile(path, &region));

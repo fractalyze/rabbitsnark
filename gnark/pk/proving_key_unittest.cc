@@ -1,6 +1,6 @@
 #include "gnark/pk/proving_key.h"
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -35,7 +35,7 @@ G2AffinePoint ToG2AffinePoint(std::string_view g2[2][2]) {
   return {x, y};
 }
 
-void RunTest(const std::string& path, SerdeMode mode) {
+void RunTest(std::string_view path, SerdeMode mode) {
   TF_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ProvingKey<Curve>> proving_key,
                           ParseProvingKey<Curve>(path, mode));
 

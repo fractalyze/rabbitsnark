@@ -4,7 +4,7 @@
 #include <sys/mman.h>
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "gnark/reader_utils.h"
@@ -39,7 +39,7 @@ struct Witness {
 // The witness must be stored with Gnark's MarshalBinary
 template <typename F>
 absl::StatusOr<std::unique_ptr<Witness<F>>> ParseWitness(
-    const std::string& path) {
+    std::string_view path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;
   TF_RETURN_IF_ERROR(
       tsl::Env::Default()->NewReadOnlyMemoryRegionFromFile(path, &region));

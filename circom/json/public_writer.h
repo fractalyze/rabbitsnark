@@ -1,7 +1,7 @@
 #ifndef CIRCOM_JSON_PUBLIC_WRITER_H_
 #define CIRCOM_JSON_PUBLIC_WRITER_H_
 
-#include <string>
+#include <string_view>
 
 #include "absl/status/status.h"
 #include "absl/types/span.h"
@@ -13,7 +13,7 @@ namespace rabbitsnark::circom {
 
 template <typename F>
 absl::Status WritePublicToJson(absl::Span<const F> public_values,
-                               const std::string& path) {
+                               std::string_view path) {
   rapidjson::Document doc;
   doc.SetArray();
 

@@ -1,7 +1,5 @@
 #include "circom/json/json_writer.h"
 
-#include <string>
-
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
@@ -9,7 +7,7 @@
 
 namespace rabbitsnark::circom {
 
-absl::Status WriteToJson(rapidjson::Document& doc, const std::string& path) {
+absl::Status WriteToJson(rapidjson::Document& doc, std::string_view path) {
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   doc.Accept(writer);

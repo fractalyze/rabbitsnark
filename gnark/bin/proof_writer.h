@@ -11,7 +11,7 @@
 namespace rabbitsnark::gnark {
 
 template <typename Curve>
-absl::Status WriteProofToBin(zkx::Literal& proof, const std::string& path) {
+absl::Status WriteProofToBin(zkx::Literal& proof, std::string_view path) {
   using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
   using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
   using Fq = typename G1AffinePoint::BaseField;
