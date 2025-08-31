@@ -1,7 +1,7 @@
 #ifndef GNARK_BIN_PROOF_WRITER_H_
 #define GNARK_BIN_PROOF_WRITER_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -40,8 +40,9 @@ absl::Status WriteProofToBin(zkx::Literal& proof, std::string_view path) {
   TF_RETURN_IF_ERROR(write_buf.WriteMany(pi_a, pi_b, pi_c, uint32_t{0},
                                          G1AffinePoint::Zero()));
 
-  std::string proof_string(reinterpret_cast<const char*>(write_buf.buffer()),
-                           write_buf.buffer_offset());
+  std::string_view proof_string(
+      reinterpret_cast<const char*>(write_buf.buffer()),
+      write_buf.buffer_offset());
   return tsl::WriteStringToFile(tsl::Env::Default(), path, proof_string);
 }
 

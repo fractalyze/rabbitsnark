@@ -1,7 +1,7 @@
 #ifndef GNARK_BIN_PUBLIC_WRITER_H_
 #define GNARK_BIN_PUBLIC_WRITER_H_
 
-#include <string>
+#include <string_view>
 
 #include "absl/status/status.h"
 #include "absl/types/span.h"
@@ -33,8 +33,9 @@ absl::Status WritePublicToBin(absl::Span<const F> public_values,
   for (size_t i = 0; i < public_values.size(); i++) {
     TF_RETURN_IF_ERROR(write_buf.Write(public_values[i]));
   }
-  std::string public_string(reinterpret_cast<const char*>(write_buf.buffer()),
-                            write_buf.buffer_offset());
+  std::string_view public_string(
+      reinterpret_cast<const char*>(write_buf.buffer()),
+      write_buf.buffer_offset());
   return tsl::WriteStringToFile(tsl::Env::Default(), path, public_string);
 }
 
