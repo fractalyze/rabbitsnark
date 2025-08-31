@@ -7,7 +7,7 @@
 #include "absl/types/span.h"
 #include "rapidjson/document.h"
 
-#include "circom/json/json_writer.h"
+#include "common/json/json_writer.h"
 
 namespace rabbitsnark::circom {
 

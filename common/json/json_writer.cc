@@ -1,11 +1,11 @@
-#include "circom/json/json_writer.h"
+#include "common/json/json_writer.h"
 
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
 #include "xla/tsl/platform/env.h"
 
-namespace rabbitsnark::circom {
+namespace rabbitsnark {
 
 absl::Status WriteToJson(rapidjson::Document& doc, std::string_view path) {
   rapidjson::StringBuffer buffer;
@@ -14,4 +14,4 @@ absl::Status WriteToJson(rapidjson::Document& doc, std::string_view path) {
   return tsl::WriteStringToFile(tsl::Env::Default(), path, buffer.GetString());
 }
 
-}  // namespace rabbitsnark::circom
+}  // namespace rabbitsnark

@@ -3,21 +3,10 @@ load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
 package(default_visibility = ["//visibility:public"])
 
 zkx_cc_library(
-    name = "json_writer",
-    srcs = ["json_writer.cc"],
-    hdrs = ["json_writer.h"],
-    deps = [
-        "@com_github_tencent_rapidjson//:rapidjson",
-        "@com_google_absl//absl/status",
-        "@zkx//xla/tsl/platform:env",
-    ],
-)
-
-zkx_cc_library(
     name = "proof_writer",
     hdrs = ["proof_writer.h"],
     deps = [
-        ":json_writer",
+        "//common/json:json_writer",
         "@com_github_tencent_rapidjson//:rapidjson",
         "@com_google_absl//absl/status",
         "@zkx//zkx:literal",
@@ -29,7 +18,7 @@ zkx_cc_library(
     name = "public_writer",
     hdrs = ["public_writer.h"],
     deps = [
-        ":json_writer",
+        "//common/json:json_writer",
         "@com_github_tencent_rapidjson//:rapidjson",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/types:span",
