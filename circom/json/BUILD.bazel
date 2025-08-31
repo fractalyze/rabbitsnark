@@ -28,6 +28,20 @@ zkx_cc_library(
 )
 
 zkx_cc_library(
+    name = "public_reader",
+    hdrs = ["public_reader.h"],
+    deps = [
+        "//common/json:json_reader",
+        "@com_github_tencent_rapidjson//:rapidjson",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/types:span",
+        "@zkx//xla/tsl/platform:statusor",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:literal_util",
+    ],
+)
+
+zkx_cc_library(
     name = "public_writer",
     hdrs = ["public_writer.h"],
     deps = [
