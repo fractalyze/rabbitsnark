@@ -3,6 +3,19 @@ load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
 package(default_visibility = ["//visibility:public"])
 
 zkx_cc_library(
+    name = "json_reader",
+    srcs = ["json_reader.cc"],
+    hdrs = ["json_reader.h"],
+    deps = [
+        "@com_github_tencent_rapidjson//:rapidjson",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+    ],
+)
+
+zkx_cc_library(
     name = "json_writer",
     srcs = ["json_writer.cc"],
     hdrs = ["json_writer.h"],
