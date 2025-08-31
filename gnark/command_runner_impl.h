@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "absl/strings/substitute.h"
+
 #include "common/command_runner_interface.h"
 #include "common/profiler.h"
-
 #include "gnark/bin/proof_writer.h"
 #include "gnark/bin/public_writer.h"
 #include "gnark/hlo/hlo_generator.h"

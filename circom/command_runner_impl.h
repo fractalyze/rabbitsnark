@@ -8,14 +8,14 @@
 #include <vector>
 
 #include "absl/strings/substitute.h"
-#include "common/command_runner_interface.h"
-#include "common/profiler.h"
 
 #include "circom/hlo/hlo_generator.h"
 #include "circom/json/proof_writer.h"
 #include "circom/json/public_writer.h"
 #include "circom/wtns/wtns.h"
 #include "circom/zkey/zkey.h"
+#include "common/command_runner_interface.h"
+#include "common/profiler.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/errors.h"
 #include "xla/tsl/platform/path.h"

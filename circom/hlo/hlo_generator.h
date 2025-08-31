@@ -8,9 +8,9 @@
 
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
-#include "common/hlo/hlo_generator_util.h"
 
 #include "circom/zkey/zkey.h"
+#include "common/hlo/hlo_generator_util.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/path.h"
 #include "zkx/base/logging.h"
