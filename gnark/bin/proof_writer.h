@@ -1,11 +1,18 @@
 #ifndef GNARK_BIN_PROOF_WRITER_H_
 #define GNARK_BIN_PROOF_WRITER_H_
 
+#include <stdint.h>
+
 #include <string_view>
 #include <vector>
 
 #include "absl/status/status.h"
 
+#include "xla/tsl/platform/env.h"
+#include "xla/tsl/platform/errors.h"
+#include "zkx/base/auto_reset.h"
+#include "zkx/base/buffer/serde.h"
+#include "zkx/base/buffer/vector_buffer.h"
 #include "zkx/literal.h"
 
 namespace rabbitsnark::gnark {

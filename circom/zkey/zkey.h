@@ -4,7 +4,6 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>

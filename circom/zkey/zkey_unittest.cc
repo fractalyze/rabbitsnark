@@ -1,6 +1,5 @@
 #include "circom/zkey/zkey.h"
 
-#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"

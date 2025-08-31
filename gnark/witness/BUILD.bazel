@@ -10,7 +10,6 @@ zkx_cc_library(
         "@zkx//xla/tsl/platform:env",
         "@zkx//xla/tsl/platform:errors",
         "@zkx//zkx/base:auto_reset",
-        "@zkx//zkx/base/buffer:endian_auto_reset",
         "@zkx//zkx/base/buffer:read_only_buffer",
     ],
 )

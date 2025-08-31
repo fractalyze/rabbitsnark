@@ -12,7 +12,6 @@
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/errors.h"
 #include "zkx/base/auto_reset.h"
-#include "zkx/base/buffer/endian_auto_reset.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
 namespace rabbitsnark::gnark {

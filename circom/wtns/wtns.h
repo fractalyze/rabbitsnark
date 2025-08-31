@@ -9,7 +9,6 @@
 #include <memory>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"

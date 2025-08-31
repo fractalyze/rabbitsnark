@@ -7,7 +7,12 @@ zkx_cc_library(
     hdrs = ["proof_writer.h"],
     deps = [
         "@com_google_absl//absl/status",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
         "@zkx//zkx:literal",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:serde",
+        "@zkx//zkx/base/buffer:vector_buffer",
     ],
 )
 

@@ -9,7 +9,6 @@
 
 #include "xla/tsl/platform/errors.h"
 #include "zkx/base/buffer/read_only_buffer.h"
-#include "zkx/base/logging.h"
 #include "zkx/math/base/big_int.h"
 
 namespace rabbitsnark::circom {
