@@ -44,7 +44,7 @@ ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
   %r = bn254.sf[] parameter(17)
   %s = bn254.sf[] parameter(18)
 
-  %z.in_mont = bn254.sf[$m]{0} bitcast(%z)
+  %z.in_mont = bn254.sf[$m]{0} bitcast-convert(%z)
 
   %Az = bn254.sf[$n] dot(%A, %z.in_mont)
   %Bz = bn254.sf[$n] dot(%B, %z.in_mont)
