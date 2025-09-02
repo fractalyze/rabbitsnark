@@ -18,28 +18,14 @@
 #include "version_generated.h"  // NOLINT(build/include_subdir)
 // clang-format on
 
-namespace zkx {
+namespace rabbitsnark {
+
+namespace base = zkx::base;
+namespace math = zkx::math;
 
 enum class Curve {
   kBn254,
 };
-
-namespace base {
-
-template <>
-class FlagValueTraits<Curve> {
- public:
-  static absl::Status ParseValue(std::string_view input, Curve* value) {
-    if (input == "bn254") {
-      *value = Curve::kBn254;
-    } else {
-      return absl::NotFoundError(absl::Substitute("Unknown curve: $0", input));
-    }
-    return absl::OkStatus();
-  }
-};
-
-}  // namespace base
 
 namespace {
 
@@ -223,4 +209,22 @@ absl::Status CommandRunner::Run(int argc, char** argv) {
   return absl::OkStatus();
 }
 
-}  // namespace zkx
+}  // namespace rabbitsnark
+
+namespace zkx::base {
+
+template <>
+class FlagValueTraits<rabbitsnark::Curve> {
+ public:
+  static absl::Status ParseValue(std::string_view input,
+                                 rabbitsnark::Curve* value) {
+    if (input == "bn254") {
+      *value = rabbitsnark::Curve::kBn254;
+    } else {
+      return absl::NotFoundError(absl::Substitute("Unknown curve: $0", input));
+    }
+    return absl::OkStatus();
+  }
+};
+
+}  // namespace zkx::base

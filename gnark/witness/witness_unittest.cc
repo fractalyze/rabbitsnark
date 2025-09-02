@@ -5,7 +5,9 @@
 #include "xla/tsl/platform/statusor.h"
 #include "zkx/math/elliptic_curves/bn/bn254/fr.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
+
+namespace math = zkx::math;
 
 using F = math::bn254::Fr;
 
@@ -21,4 +23,4 @@ TEST(WitnessTest, Read) {
   EXPECT_EQ(*witness, expected_witness);
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark

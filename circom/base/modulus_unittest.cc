@@ -6,7 +6,10 @@
 #include "zkx/base/buffer/vector_buffer.h"
 #include "zkx/math/elliptic_curves/bn/bn254/fr.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
+
+namespace base = zkx::base;
+namespace math = zkx::math;
 
 using F = math::bn254::Fr;
 
@@ -54,4 +57,4 @@ TEST(ModulusTest, Read) {
   }
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom

@@ -7,17 +7,17 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
-#include "common/hlo/hlo_generator_util.h"
 
+#include "common/hlo/hlo_generator_util.h"
 #include "gnark/pk/proving_key.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/path.h"
-#include "zkx/base/logging.h"
 #include "zkx/math/poly/bit_reverse.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 template <typename Curve>
 struct GnarkProvingKeyAdditionalData : public ProvingKeyAdditionalData<Curve> {
@@ -149,7 +149,7 @@ absl::Status WriteCosetTwiddlesToFile(T multiplicative_gen, size_t domain_size,
     x *= multiplicative_gen;
   }
 
-  math::BitReverseShuffleInPlace(coset_twiddles);
+  zkx::math::BitReverseShuffleInPlace(coset_twiddles);
 
   return WriteSpanToFile(absl::MakeConstSpan(coset_twiddles), output_dir,
                          "coset_twiddles");
@@ -166,7 +166,7 @@ absl::Status WriteCosetInvTwiddlesToFile(T multiplicative_gen_inv,
     x *= multiplicative_gen_inv;
   }
 
-  math::BitReverseShuffleInPlace(coset_inv_twiddles);
+  zkx::math::BitReverseShuffleInPlace(coset_inv_twiddles);
 
   return WriteSpanToFile(absl::MakeConstSpan(coset_inv_twiddles), output_dir,
                          "coset_inv_twiddles");
@@ -279,6 +279,6 @@ absl::StatusOr<std::string> GenerateHLO(const ProvingKey<Curve>& proving_key,
   return hlo_string;
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark
 
 #endif  // GNARK_HLO_HLO_GENERATOR_H_

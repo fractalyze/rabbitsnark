@@ -12,7 +12,7 @@
 #include "zkx/base/buffer/read_only_buffer.h"
 #include "zkx/base/logging.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename T>
 struct Section {
@@ -26,7 +26,7 @@ class Sections {
  public:
   typedef std::string_view (*ErrorFn)(T type);
 
-  Sections(const base::ReadOnlyBuffer& buffer, ErrorFn error_fn)
+  Sections(const zkx::base::ReadOnlyBuffer& buffer, ErrorFn error_fn)
       : buffer_(buffer), error_fn_(error_fn) {}
 
   absl::Status Read() {
@@ -63,11 +63,11 @@ class Sections {
     return absl::OkStatus();
   }
 
-  const base::ReadOnlyBuffer& buffer_;
+  const zkx::base::ReadOnlyBuffer& buffer_;
   ErrorFn error_fn_;
   std::vector<Section<T>> sections_;
 };
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_BASE_SECTIONS_H_

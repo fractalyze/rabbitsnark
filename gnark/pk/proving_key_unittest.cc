@@ -1,6 +1,6 @@
 #include "gnark/pk/proving_key.h"
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -9,9 +9,12 @@
 #include "zkx/base/containers/container_util.h"
 #include "zkx/math/elliptic_curves/bn/bn254/curve.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 namespace {
+
+namespace base = zkx::base;
+namespace math = zkx::math;
 
 using Curve = math::bn254::Curve;
 using G1AffinePoint = math::bn254::G1AffinePoint;
@@ -32,7 +35,7 @@ G2AffinePoint ToG2AffinePoint(std::string_view g2[2][2]) {
   return {x, y};
 }
 
-void RunTest(const std::string& path, SerdeMode mode) {
+void RunTest(std::string_view path, SerdeMode mode) {
   TF_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ProvingKey<Curve>> proving_key,
                           ParseProvingKey<Curve>(path, mode));
 
@@ -187,4 +190,4 @@ TEST(ProvingKeyTest, ReadDump) {
   RunTest("gnark/pk/pk.dump.bin", SerdeMode::kDump);
 }
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark

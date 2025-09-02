@@ -3,11 +3,50 @@ load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
 package(default_visibility = ["//visibility:public"])
 
 zkx_cc_library(
+    name = "proof_reader",
+    hdrs = ["proof_reader.h"],
+    deps = [
+        "@com_google_absl//absl/status:statusor",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:literal_util",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:endian",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+        "@zkx//zkx/base/buffer:serde",
+    ],
+)
+
+zkx_cc_library(
     name = "proof_writer",
     hdrs = ["proof_writer.h"],
     deps = [
         "@com_google_absl//absl/status",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
         "@zkx//zkx:literal",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:serde",
+        "@zkx//zkx/base/buffer:vector_buffer",
+    ],
+)
+
+zkx_cc_library(
+    name = "public_reader",
+    hdrs = ["public_reader.h"],
+    deps = [
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
+        "@zkx//xla/tsl/platform:env",
+        "@zkx//xla/tsl/platform:errors",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:literal_util",
+        "@zkx//zkx/base:auto_reset",
+        "@zkx//zkx/base/buffer:endian",
+        "@zkx//zkx/base/buffer:read_only_buffer",
+        "@zkx//zkx/base/buffer:serde",
     ],
 )
 

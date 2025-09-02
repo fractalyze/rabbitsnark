@@ -8,10 +8,10 @@ zkx_cc_library(
     deps = [
         "//common/hlo:hlo_generator_util",
         "//gnark/pk:proving_key",
+        "@com_google_absl//absl/log",
         "@com_google_absl//absl/strings",
         "@zkx//xla/tsl/platform:env",
         "@zkx//xla/tsl/platform:path",
-        "@zkx//zkx/base:logging",
         "@zkx//zkx/math/poly:bit_reverse",
     ],
 )

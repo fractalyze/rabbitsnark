@@ -7,9 +7,8 @@
 #include <sys/mman.h>
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -23,7 +22,7 @@
 #include "xla/tsl/platform/statusor.h"
 #include "zkx/base/buffer/read_only_buffer.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 namespace v2 {
 
 template <typename F>
@@ -41,7 +40,7 @@ struct Wtns {
 
   virtual v2::Wtns<F>* ToV2() { return nullptr; }
 
-  virtual absl::Status Read(const base::ReadOnlyBuffer& buffer) = 0;
+  virtual absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) = 0;
 
   virtual size_t GetNumWitness() const = 0;
 
@@ -53,7 +52,7 @@ struct Wtns {
 constexpr char kWtnsMagic[4] = {'w', 't', 'n', 's'};
 
 template <typename F>
-absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(const std::string& path) {
+absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(std::string_view path) {
   std::unique_ptr<tsl::ReadOnlyMemoryRegion> region;
   TF_RETURN_IF_ERROR(
       tsl::Env::Default()->NewReadOnlyMemoryRegionFromFile(path, &region));
@@ -62,8 +61,8 @@ absl::StatusOr<std::unique_ptr<Wtns<F>>> ParseWtns(const std::string& path) {
     return absl::InternalError("failed to call madvice()");
   }
 
-  base::ReadOnlyBuffer buffer(region->data(), region->length());
-  buffer.set_endian(base::Endian::kLittle);
+  zkx::base::ReadOnlyBuffer buffer(region->data(), region->length());
+  buffer.set_endian(zkx::base::Endian::kLittle);
   char magic[4];
   uint32_t version;
   TF_RETURN_IF_ERROR(buffer.ReadMany(magic, &version));
@@ -102,7 +101,7 @@ struct WtnsHeaderSection {
     return !operator==(other);
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) {
     TF_RETURN_IF_ERROR(modulus.Read(buffer));
     return buffer.ReadMany(&num_witness);
   }
@@ -119,7 +118,7 @@ struct WtnsDataSection {
     return witnesses != other.witnesses;
   }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer,
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer,
                     const WtnsHeaderSection& header) {
     F* ptr;
     TF_RETURN_IF_ERROR(buffer.ReadPtr(&ptr, header.num_witness));
@@ -140,7 +139,7 @@ struct Wtns : public circom::Wtns<F> {
   uint32_t GetVersion() const override { return 2; }
   Wtns* ToV2() override { return this; }
 
-  absl::Status Read(const base::ReadOnlyBuffer& buffer) override {
+  absl::Status Read(const zkx::base::ReadOnlyBuffer& buffer) override {
     Sections<WtnsSectionType> sections(buffer, &WtnsSectionTypeToString);
     TF_RETURN_IF_ERROR(sections.Read());
 
@@ -158,6 +157,6 @@ struct Wtns : public circom::Wtns<F> {
 };
 
 }  // namespace v2
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_WTNS_WTNS_H_

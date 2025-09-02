@@ -10,7 +10,7 @@
 
 #include "zkx/math/base/sparse_matrix.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 #pragma pack(push, 1)
 // R1CS is represented as A * z ∘ B * z = C * z, where ∘ is the Hadamard
@@ -46,8 +46,8 @@ struct Coefficient {
 
   // Helper function to create CSR matrices from coefficients
   static void ToSparseMatrices(absl::Span<const Coefficient> coefficients,
-                               math::SparseMatrix<F>& a_matrix,
-                               math::SparseMatrix<F>& b_matrix) {
+                               zkx::math::SparseMatrix<F>& a_matrix,
+                               zkx::math::SparseMatrix<F>& b_matrix) {
     for (const Coefficient& coeff : coefficients) {
       if (coeff.matrix == 0) {
         a_matrix.InsertUnique(coeff.constraint, coeff.signal, coeff.value);
@@ -59,6 +59,6 @@ struct Coefficient {
 };
 #pragma pack(pop)
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_ZKEY_COEFFICIENT_H_

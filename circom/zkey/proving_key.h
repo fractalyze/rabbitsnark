@@ -5,7 +5,7 @@
 
 #include "circom/zkey/verifying_key.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename Curve>
 struct ProvingKey {
@@ -29,6 +29,6 @@ struct ProvingKey {
   bool operator!=(const ProvingKey& other) const { return !operator==(other); }
 };
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_ZKEY_PROVING_KEY_H_

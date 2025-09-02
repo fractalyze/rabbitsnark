@@ -3,7 +3,7 @@
 
 #include "zkx/math/elliptic_curves/short_weierstrass/affine_point.h"
 
-namespace zkx::gnark {
+namespace rabbitsnark::gnark {
 
 enum class SerdeMode {
   // For data saved with WriteTo(); must be read with ReadFrom().
@@ -14,8 +14,8 @@ enum class SerdeMode {
   kDump,
 };
 
-math::AffinePointSerdeMode ToAffinePointSerdeMode(SerdeMode mode);
+zkx::math::AffinePointSerdeMode ToAffinePointSerdeMode(SerdeMode mode);
 
-}  // namespace zkx::gnark
+}  // namespace rabbitsnark::gnark
 
 #endif  // GNARK_SERDE_MODE_H_

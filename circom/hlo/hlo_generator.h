@@ -6,17 +6,17 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
-#include "common/hlo/hlo_generator_util.h"
 
 #include "circom/zkey/zkey.h"
+#include "common/hlo/hlo_generator_util.h"
 #include "xla/tsl/platform/env.h"
 #include "xla/tsl/platform/path.h"
-#include "zkx/base/logging.h"
 #include "zkx/math/poly/bit_reverse.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 const std::string_view kHloText = R"(
 ENTRY %groth16 () -> (bn254.g1_affine[], bn254.g2_affine[], bn254.g1_affine[]) {
@@ -107,8 +107,8 @@ absl::Status WriteABMatricesToFile(
     size_t num_rows, size_t num_cols,
     absl::Span<const Coefficient<T>> coefficients, std::string_view output_dir,
     std::map<std::string, std::string>& replacements) {
-  math::SparseMatrix<T> a_matrix(num_rows, num_cols);
-  math::SparseMatrix<T> b_matrix(num_rows, num_cols);
+  zkx::math::SparseMatrix<T> a_matrix(num_rows, num_cols);
+  zkx::math::SparseMatrix<T> b_matrix(num_rows, num_cols);
   Coefficient<T>::ToSparseMatrices(coefficients, a_matrix, b_matrix);
 
   TF_RETURN_IF_ERROR(
@@ -121,7 +121,7 @@ absl::Status WriteABMatricesToFile(
 template <typename T>
 absl::Status WriteTwiddlesToFile(size_t domain_size,
                                  std::string_view output_dir) {
-  TF_ASSIGN_OR_RETURN(T w, math::GetRootOfUnity<T>(2 * domain_size));
+  TF_ASSIGN_OR_RETURN(T w, zkx::math::GetRootOfUnity<T>(2 * domain_size));
 
   std::vector<T> twiddles(domain_size);
   T twiddle = T::One();
@@ -130,7 +130,7 @@ absl::Status WriteTwiddlesToFile(size_t domain_size,
     twiddle *= w;
   }
 
-  math::BitReverseShuffleInPlace(twiddles);
+  zkx::math::BitReverseShuffleInPlace(twiddles);
 
   return WriteSpanToFile(absl::MakeConstSpan(twiddles), output_dir, "twiddles");
 }
@@ -210,6 +210,6 @@ absl::StatusOr<std::string> GenerateHLO(const ZKey<Curve>& zkey,
   return hlo_string;
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_HLO_HLO_GENERATOR_H_

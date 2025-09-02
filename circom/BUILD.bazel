@@ -1,4 +1,4 @@
-load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library")
+load("@zkx//bazel:zkx_cc.bzl", "zkx_cc_library", "zkx_cc_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,5 +18,25 @@ zkx_cc_library(
         "@zkx//xla/tsl/platform:errors",
         "@zkx//xla/tsl/platform:path",
         "@zkx//xla/tsl/platform:statusor",
+    ],
+)
+
+zkx_cc_test(
+    name = "circom_test",
+    srcs = ["command_runner_test.cc"],
+    data = [
+        "//circom/wtns:multiplier_3.wtns",
+        "//circom/zkey:multiplier_3.zkey",
+    ],
+    # TODO(chokobole): This takes too long.
+    tags = ["manual"],
+    deps = [
+        ":command_runner_impl",
+        "//circom/json:proof_reader",
+        "//circom/json:public_reader",
+        "@zkx//xla/tsl/platform:statusor",
+        "@zkx//zkx:literal",
+        "@zkx//zkx:literal_util",
+        "@zkx//zkx/math/elliptic_curves/bn/bn254:curve",
     ],
 )

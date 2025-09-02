@@ -1,22 +1,22 @@
 #ifndef CIRCOM_JSON_PROOF_WRITER_H_
 #define CIRCOM_JSON_PROOF_WRITER_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/status/status.h"
 #include "rapidjson/document.h"
 
-#include "circom/json/json_writer.h"
+#include "common/json/json_writer.h"
 #include "zkx/literal.h"
 #include "zkx/math/geometry/point_declarations.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 template <typename Curve>
 void AddPoint(rapidjson::Document& doc, std::string_view key,
-              const math::AffinePoint<Curve>& point) {
-  using BaseField = typename math::AffinePoint<Curve>::BaseField;
+              const zkx::math::AffinePoint<Curve>& point) {
+  using BaseField = typename zkx::math::AffinePoint<Curve>::BaseField;
 
   rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
   const BaseField& x = point.x();
@@ -55,12 +55,12 @@ void AddPoint(rapidjson::Document& doc, std::string_view key,
 }
 
 template <typename Curve>
-absl::Status WriteProofToJson(Literal& proof, const std::string& path) {
+absl::Status WriteProofToJson(zkx::Literal& proof, std::string_view path) {
   using G1AffinePoint = typename Curve::G1Curve::AffinePoint;
   using G2AffinePoint = typename Curve::G2Curve::AffinePoint;
 
   rapidjson::Document doc;
-  std::vector<Literal> decomposed = proof.DecomposeTuple();
+  std::vector<zkx::Literal> decomposed = proof.DecomposeTuple();
 
   doc.SetObject();
   AddPoint(doc, "pi_a", decomposed[0].data<G1AffinePoint>()[0]);
@@ -71,6 +71,6 @@ absl::Status WriteProofToJson(Literal& proof, const std::string& path) {
   return WriteToJson(doc, path);
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
 
 #endif  // CIRCOM_JSON_PROOF_WRITER_H_

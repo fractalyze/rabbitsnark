@@ -4,7 +4,7 @@
 
 #include "absl/base/optimization.h"
 
-namespace zkx::circom {
+namespace rabbitsnark::circom {
 
 std::string Modulus::ToString() const {
 #define MODULUS_TO_STRING(n) ToBigInt<n>().ToString()
@@ -33,4 +33,4 @@ std::string Modulus::ToString() const {
   return "";
 }
 
-}  // namespace zkx::circom
+}  // namespace rabbitsnark::circom
