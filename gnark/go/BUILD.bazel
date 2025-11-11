@@ -2,7 +2,7 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@rules_cc//cc:defs.bzl", "cc_import")
 
-# gazelle:prefix github.com/zk-rabbit/rabbitsnark/gnark/go
+# gazelle:prefix github.com/fractalyze/rabbitsnark/gnark/go
 gazelle(name = "gazelle")
 
 gazelle(
@@ -19,7 +19,7 @@ go_library(
     name = "gnark",
     srcs = ["gnark.go"],
     cgo = True,
-    importpath = "github.com/zk-rabbit/rabbitsnark/gnark/go",
+    importpath = "github.com/fractalyze/rabbitsnark/gnark/go",
     visibility = ["//visibility:private"],
     deps = [
         "@com_github_consensys_gnark//backend",

@@ -1,4 +1,4 @@
-module github.com/zk-rabbit/rabbitsnark/gnark/go
+module github.com/fractalyze/rabbitsnark/gnark/go
 
 go 1.23.0
 

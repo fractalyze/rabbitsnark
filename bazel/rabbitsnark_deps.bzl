@@ -8,7 +8,7 @@ def rabbitsnark_deps():
         name = "zkx",
         sha256 = "6c9b646f0c0883ed66542efadc9e0c9be83011bfba93193c0a81d433364502ae",
         strip_prefix = "zkx-{commit}".format(commit = ZKX_COMMIT),
-        urls = ["https://github.com/zk-rabbit/zkx/archive/{commit}.tar.gz".format(commit = ZKX_COMMIT)],
+        urls = ["https://github.com/fractalyze/zkx/archive/{commit}.tar.gz".format(commit = ZKX_COMMIT)],
     )
     # Uncomment this for development!
     # native.local_repository(

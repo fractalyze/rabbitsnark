@@ -1,7 +1,7 @@
 # SP1 Go
 
 This is based on
-[zk-rabbit/sp1#feat/export-make-witness](https://github.com/zk-rabbit/sp1/tree/feat/export-make-witness).
+[fractalyze/sp1#feat/export-make-witness](https://github.com/fractalyze/sp1/tree/feat/export-make-witness).
 
 ## How to Build `libsp1.a`
 
