@@ -1,5 +1,7 @@
 # RabbitSNARK
 
+[![CI](https://github.com/fractalyze/rabbitsnark/actions/workflows/ci.yml/badge.svg)](https://github.com/fractalyze/rabbitsnark/actions/workflows/ci.yml)
+
 This is a command-line tool for generating zero-knowledge proofs using the
 Groth16 proving system. It is built with the
 [ZKIR](https://github.com/fractalyze/zkir) and utilizes [ZKX](zkx). The tool is
