@@ -1,7 +1,7 @@
 # SP1 Go
 
 This is based on
-[fractalyze/sp1#feat/export-make-witness](https://github.com/fractalyze/sp1/tree/feat/export-make-witness).
+[succintlabs/sp1#1b4238f](https://github.com/succinctlabs/sp1/commit/1b4238f).
 
 ## How to Build `libsp1.a`
 
